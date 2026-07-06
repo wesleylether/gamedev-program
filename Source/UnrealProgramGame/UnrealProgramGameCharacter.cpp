@@ -64,12 +64,20 @@ void AUnrealProgramGameCharacter::SetupPlayerInputComponent(UInputComponent* Pla
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AUnrealProgramGameCharacter::LookInput);
 		EnhancedInputComponent->BindAction(MouseLookAction, ETriggerEvent::Triggered, this, &AUnrealProgramGameCharacter::LookInput);
 
-		// Trigger State Tests
+		// Trigger State Tests Module 1-1
 		EnhancedInputComponent->BindAction(TriggerStateTestAction, ETriggerEvent::Started, this, &AUnrealProgramGameCharacter::TriggerStateTestStarted);
 		EnhancedInputComponent->BindAction(TriggerStateTestAction, ETriggerEvent::Completed, this, &AUnrealProgramGameCharacter::TriggerStateTestCompleted);
 		EnhancedInputComponent->BindAction(TriggerStateTestAction, ETriggerEvent::Canceled, this, &AUnrealProgramGameCharacter::TriggerStateTestCanceled);
 		EnhancedInputComponent->BindAction(TriggerStateTestAction, ETriggerEvent::Triggered, this, &AUnrealProgramGameCharacter::TriggerStateTestTriggered);
 		EnhancedInputComponent->BindAction(TriggerStateTestAction, ETriggerEvent::Ongoing, this, &AUnrealProgramGameCharacter::TriggerStateTestOngoing);
+
+		// Rotate Module 1-2
+		EnhancedInputComponent->BindAction(RotateAction, ETriggerEvent::Triggered, this, &AUnrealProgramGameCharacter::RotateInput);
+		EnhancedInputComponent->BindAction(RotateAction, ETriggerEvent::Ongoing, this, &AUnrealProgramGameCharacter::RotateTriggerOngoing);
+		EnhancedInputComponent->BindAction(RotateAction, ETriggerEvent::Triggered, this, &AUnrealProgramGameCharacter::RotateTriggerTriggered);
+		EnhancedInputComponent->BindAction(TriggerAimAction, ETriggerEvent::Triggered, this, &AUnrealProgramGameCharacter::TriggerAimInputTriggered);
+		EnhancedInputComponent->BindAction(TriggerAimAction, ETriggerEvent::Completed, this, &AUnrealProgramGameCharacter::TriggerAimInputCompleted);
+		EnhancedInputComponent->BindAction(TriggerInvertAction, ETriggerEvent::Triggered, this, &AUnrealProgramGameCharacter::TriggerInvertInput);
 	}
 	else
 	{
@@ -95,6 +103,21 @@ void AUnrealProgramGameCharacter::OnEndCrouch(float HalfHeightAdjust, float Scal
 	GetFirstPersonCameraComponent()->SetRelativeLocation(NewLocation);
 }
 
+void AUnrealProgramGameCharacter::TriggerAimInputTriggered(const FInputActionValue& Value)
+{
+	bIsAiming = true;
+}
+
+void AUnrealProgramGameCharacter::TriggerAimInputCompleted(const FInputActionValue& Value)
+{
+	bIsAiming = false;
+}
+
+void AUnrealProgramGameCharacter::TriggerInvertInput(const FInputActionValue& Value)
+{
+	bIsInverting = !bIsInverting;
+}
+
 void AUnrealProgramGameCharacter::MoveInput(const FInputActionValue& Value)
 {
 	// get the Vector2D move axis
@@ -110,7 +133,14 @@ void AUnrealProgramGameCharacter::LookInput(const FInputActionValue& Value)
 	FVector2D LookAxisVector = Value.Get<FVector2D>();
 
 	// pass the axis values to the aim input
-	DoAim(LookAxisVector.X, LookAxisVector.Y);
+	if (bIsInverting)
+	{
+		DoAim(LookAxisVector.X * -1.0f, LookAxisVector.Y * -1.0f);
+	}
+	else
+	{
+		DoAim(LookAxisVector.X, LookAxisVector.Y);
+	}
 }
 
 void AUnrealProgramGameCharacter::CrouchInput(const FInputActionValue& Value)
@@ -131,9 +161,18 @@ void AUnrealProgramGameCharacter::DoAim(float Yaw, float Pitch)
 {
 	if (GetController())
 	{
+		float YawValue = Yaw;
+		float PitchValue = Pitch;
+
+		if (bIsAiming)
+		{
+			YawValue = Yaw * 0.3f;
+			PitchValue = Pitch * 0.3f;
+		}
+
 		// pass the rotation inputs
-		AddControllerYawInput(Yaw);
-		AddControllerPitchInput(Pitch);
+		AddControllerYawInput(YawValue);
+		AddControllerPitchInput(PitchValue);
 	}
 }
 
@@ -157,6 +196,42 @@ void AUnrealProgramGameCharacter::DoJumpEnd()
 {
 	// pass StopJumping to the character
 	StopJumping();
+}
+
+void AUnrealProgramGameCharacter::RotateInput(const FInputActionInstance& Instance)
+{
+
+	float AxisValue = Instance.GetValue().Get<float>();
+
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(1, 3.0f, FColor::White, FString::Printf(TEXT("Value: %f"), AxisValue));
+	}
+
+	if (GetController() && AxisValue != 0.0f)
+	{
+		float DeltaYaw = AxisValue * 50.0f * GetWorld()->GetDeltaSeconds();
+
+		FRotator CurrentRotation = GetController()->GetControlRotation();
+		CurrentRotation.Yaw += DeltaYaw;
+
+		GetController()->SetControlRotation(CurrentRotation);
+	}
+}
+
+void AUnrealProgramGameCharacter::RotateTriggerOngoing(const FInputActionInstance& Instance)
+{
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(2, 3.0f, FColor::Green, FString::Printf(TEXT("Ongoing: %f"), Instance.GetElapsedTime()));
+	}
+}
+void AUnrealProgramGameCharacter::RotateTriggerTriggered(const FInputActionInstance& Instance)
+{
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(3, 3.0f, FColor::Blue, FString::Printf(TEXT("Triggered: %f"), Instance.GetTriggeredTime()));
+	}
 }
 
 void AUnrealProgramGameCharacter::TriggerStateTestStarted(const FInputActionValue& Value)

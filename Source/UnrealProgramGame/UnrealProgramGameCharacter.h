@@ -42,18 +42,30 @@ protected:
 
 	/** Look Input Action */
 	UPROPERTY(EditAnywhere, Category = "Input")
-	class UInputAction* LookAction;
+	UInputAction* LookAction;
 
 	/** Mouse Look Input Action */
 	UPROPERTY(EditAnywhere, Category = "Input")
-	class UInputAction* MouseLookAction;
+	UInputAction* MouseLookAction;
 
 	UPROPERTY(EditAnywhere, Category = "Input")
-	class UInputAction* CrouchAction;
+	UInputAction* CrouchAction;
 
-	// Trigger State Tests
+	// Trigger State Tests Module 1-1
 	UPROPERTY(EditAnywhere, Category = "Input")
-	class UInputAction* TriggerStateTestAction;
+	UInputAction* TriggerStateTestAction;
+
+	// Rotate with Q en E Module 1-2.1
+	UPROPERTY(EditAnywhere, Category = "Input")
+	UInputAction* RotateAction;
+
+	// Slow Aim Module 1-2.2
+	UPROPERTY(EditAnywhere, Category = "Input")
+	UInputAction* TriggerAimAction;
+
+	// Slow Aim Module 1-2.3
+	UPROPERTY(EditAnywhere, Category = "Input")
+	UInputAction* TriggerInvertAction;
 
 public:
 	AUnrealProgramGameCharacter();
@@ -82,6 +94,10 @@ protected:
 	UFUNCTION(BlueprintCallable, Category = "Input")
 	virtual void DoJumpEnd();
 
+	void RotateInput(const FInputActionInstance& Instance);
+	void RotateTriggerOngoing(const FInputActionInstance& InputActionInstance);
+	void RotateTriggerTriggered(const FInputActionInstance& InputActionInstance);
+
 	// Trigger State Tests
 	void TriggerStateTestStarted(const FInputActionValue& Value);
 	void TriggerStateTestCompleted(const FInputActionValue& Value);
@@ -89,12 +105,21 @@ protected:
 	void TriggerStateTestTriggered(const FInputActionInstance& Instance);
 	void TriggerStateTestOngoing(const FInputActionInstance& Instance);
 
-protected:
 	/** Set up input action bindings */
 	virtual void SetupPlayerInputComponent(UInputComponent* InputComponent) override;
 
 	virtual void OnStartCrouch(float HalfHeightAdjust, float ScaledHalfHeightAdjust) override;
 	virtual void OnEndCrouch(float HalfHeightAdjust, float ScaledHalfHeightAdjust) override;
+
+	void TriggerAimInputTriggered(const FInputActionValue& Value);
+	void TriggerAimInputCompleted(const FInputActionValue& Value);
+	void TriggerInvertInput(const FInputActionValue& Value);
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character")
+	float CrouchedCameraOffset = 80.0f;
+
+	bool bIsAiming = false;
+	bool bIsInverting = false;
 
 public:
 	/** Returns the first person mesh **/
@@ -102,7 +127,4 @@ public:
 
 	/** Returns first person camera component **/
 	UCameraComponent* GetFirstPersonCameraComponent() const { return FirstPersonCameraComponent; }
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character")
-	float CrouchedCameraOffset = 80.0f;
 };

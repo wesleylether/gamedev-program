@@ -16,6 +16,7 @@
 /Build/
 /Plugins/*/Binaries/
 /Plugins/*/Intermediate/
+/Plugins/*/RiderLink/
 
 # Crash reports
 /CrashReportClient/
