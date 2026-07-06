@@ -1,0 +1,27 @@
+# Machine-specific / Local User settings
+/DerivedDataCache/
+/Intermediate/
+/Saved/
+/.vs/
+/.idea/
+/.vscode/
+/*.sln
+/*.suo
+/*.user
+/*.userosscache
+/*.sln.docstates
+
+# Built binaries and temporary build artifacts
+/Binaries/
+/Build/
+/Plugins/*/Binaries/
+/Plugins/*/Intermediate/
+
+# Crash reports
+/CrashReportClient/
+
+# External / Script generator files
+/Script/
+
+# Audio/video render outputs (if using Sequencer/Movie Render Queue)
+/Movies/
