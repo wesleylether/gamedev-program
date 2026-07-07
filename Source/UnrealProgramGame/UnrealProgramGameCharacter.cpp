@@ -78,6 +78,13 @@ void AUnrealProgramGameCharacter::SetupPlayerInputComponent(UInputComponent* Pla
 		EnhancedInputComponent->BindAction(TriggerAimAction, ETriggerEvent::Triggered, this, &AUnrealProgramGameCharacter::TriggerAimInputTriggered);
 		EnhancedInputComponent->BindAction(TriggerAimAction, ETriggerEvent::Completed, this, &AUnrealProgramGameCharacter::TriggerAimInputCompleted);
 		EnhancedInputComponent->BindAction(TriggerInvertAction, ETriggerEvent::Triggered, this, &AUnrealProgramGameCharacter::TriggerInvertInput);
+
+		// Trigger Qualifiers Module 1-3
+		EnhancedInputComponent->BindAction(TriggerQualifierAction, ETriggerEvent::Started, this, &AUnrealProgramGameCharacter::TriggerQualifierStarted);
+		EnhancedInputComponent->BindAction(TriggerQualifierAction, ETriggerEvent::Completed, this, &AUnrealProgramGameCharacter::TriggerQualifierCompleted);
+		EnhancedInputComponent->BindAction(TriggerQualifierAction, ETriggerEvent::Canceled, this, &AUnrealProgramGameCharacter::TriggerQualifierCanceled);
+		EnhancedInputComponent->BindAction(TriggerQualifierAction, ETriggerEvent::Triggered, this, &AUnrealProgramGameCharacter::TriggerQualifierTriggered);
+		EnhancedInputComponent->BindAction(TriggerQualifierAction, ETriggerEvent::Ongoing, this, &AUnrealProgramGameCharacter::TriggerQualifierOngoing);
 	}
 	else
 	{
@@ -271,5 +278,45 @@ void AUnrealProgramGameCharacter::TriggerStateTestOngoing(const FInputActionInst
 	if (GEngine)
 	{
 		GEngine->AddOnScreenDebugMessage(2, 1.0f, FColor::Yellow, FString::Printf(TEXT("TriggerStatesAction Ongoing: %f"), Instance.GetElapsedTime()));
+	}
+}
+
+void AUnrealProgramGameCharacter::TriggerQualifierStarted(const FInputActionValue& Value)
+{
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Magenta, TEXT("Started!"));
+	}
+}
+
+void AUnrealProgramGameCharacter::TriggerQualifierCompleted(const FInputActionValue& Value)
+{
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Green, TEXT("Completed!"));
+	}
+}
+
+void AUnrealProgramGameCharacter::TriggerQualifierCanceled(const FInputActionValue& Value)
+{
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, TEXT("Canceled!"));
+	}
+}
+
+void AUnrealProgramGameCharacter::TriggerQualifierTriggered(const FInputActionInstance& Instance)
+{
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(1, 1.0f, FColor::Blue, FString::Printf(TEXT("Triggered: %f"), Instance.GetTriggeredTime()));
+	}
+}
+
+void AUnrealProgramGameCharacter::TriggerQualifierOngoing(const FInputActionInstance& Instance)
+{
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(2, 1.0f, FColor::Yellow, FString::Printf(TEXT("Ongoing: %f"), Instance.GetElapsedTime()));
 	}
 }

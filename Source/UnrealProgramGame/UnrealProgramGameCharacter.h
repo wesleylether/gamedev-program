@@ -67,6 +67,10 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Input")
 	UInputAction* TriggerInvertAction;
 
+	// Trigger Qualifiers
+	UPROPERTY(EditAnywhere, Category = "Input")
+	UInputAction* TriggerQualifierAction;
+
 public:
 	AUnrealProgramGameCharacter();
 
@@ -104,6 +108,12 @@ protected:
 	void TriggerStateTestCanceled(const FInputActionValue& Value);
 	void TriggerStateTestTriggered(const FInputActionInstance& Instance);
 	void TriggerStateTestOngoing(const FInputActionInstance& Instance);
+
+	void TriggerQualifierStarted(const FInputActionValue& Value);
+	void TriggerQualifierCompleted(const FInputActionValue& Value);
+	void TriggerQualifierCanceled(const FInputActionValue& Value);
+	void TriggerQualifierTriggered(const FInputActionInstance& Instance);
+	void TriggerQualifierOngoing(const FInputActionInstance& Instance);
 
 	/** Set up input action bindings */
 	virtual void SetupPlayerInputComponent(UInputComponent* InputComponent) override;
