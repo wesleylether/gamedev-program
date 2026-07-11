@@ -8,10 +8,18 @@
 #include "Logging/LogMacros.h"
 #include "UnrealProgramGameCharacter.generated.h"
 
+UENUM(BlueprintType)
+enum class EPlayerState : uint8
+{
+	Walking,
+	Flying,
+};
+
 class UInputComponent;
 class USkeletalMeshComponent;
 class UCameraComponent;
 class UInputAction;
+class UMetaSoundSource;
 
 DECLARE_LOG_CATEGORY_EXTERN(LogTemplateCharacter, Log, All);
 
@@ -48,9 +56,6 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Input")
 	UInputAction* MouseLookAction;
 
-	UPROPERTY(EditAnywhere, Category = "Input")
-	UInputAction* CrouchAction;
-
 	// Trigger State Tests Module 1-1
 	UPROPERTY(EditAnywhere, Category = "Input")
 	UInputAction* TriggerStateTestAction;
@@ -71,12 +76,40 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Input")
 	UInputAction* TriggerQualifierAction;
 
+	UPROPERTY(EditAnywhere, Category = "Input")
+	UInputAction* WalkAction;
+
+	UPROPERTY(EditAnywhere, Category = "Input")
+	UInputAction* RunAction;
+
+	UPROPERTY(EditAnywhere, Category = "Input")
+	UInputAction* CrouchAction;
+
+	UPROPERTY(EditAnywhere, Category = "Input")
+	UInputAction* ChargedJumpAction;
+
+	UPROPERTY(EditAnywhere, Category = "Input")
+	UInputAction* DashedAction;
+
+	UPROPERTY(EditAnywhere, Category = "Input")
+	UInputAction* FlyModeAction;
+
 public:
 	AUnrealProgramGameCharacter();
 
+	virtual void Tick(float DeltaTime) override;
+
 protected:
+	virtual void BeginPlay() override;
+
 	/** Called from Input Actions for movement input */
 	void MoveInput(const FInputActionValue& Value);
+	void WalkInputTriggered(const FInputActionValue& Value);
+	void RunInputTriggered(const FInputActionValue& Value);
+
+	void DashedStarted(const FInputActionValue& Values);
+	void DashedTriggered(const FInputActionValue& Values);
+	void StopDash();
 
 	/** Called from Input Actions for looking input */
 	void LookInput(const FInputActionValue& Value);
@@ -97,6 +130,10 @@ protected:
 	/** Handles jump end inputs from either controls or UI interfaces */
 	UFUNCTION(BlueprintCallable, Category = "Input")
 	virtual void DoJumpEnd();
+
+	void DoChargedJumpStart(const FInputActionValue& Value);
+
+	void DoChargedJumpEnd(const FInputActionValue& Value);
 
 	void RotateInput(const FInputActionInstance& Instance);
 	void RotateTriggerOngoing(const FInputActionInstance& InputActionInstance);
@@ -125,11 +162,53 @@ protected:
 	void TriggerAimInputCompleted(const FInputActionValue& Value);
 	void TriggerInvertInput(const FInputActionValue& Value);
 
+	void FlyInput();
+	void FlyUp();
+	void FlyDown();
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character")
 	float CrouchedCameraOffset = 80.0f;
 
-	bool bIsAiming = false;
-	bool bIsInverting = false;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character")
+	float CameraInterpSpeed = 10.0f;
+
+	FVector DefaultCameraRelativeLocation;
+	FVector TargetCameraRelativeLocation;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character")
+	float MaxSneakSpeed = 200.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character")
+	float MaxWalkSpeed = 600.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character")
+	float MaxRunSpeed = 1100.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character")
+	float MaxJumpVelocity = 480.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character")
+	float MaxChargedJumpVelocity = 1200.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character")
+	float DashSpeed = 2500.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character")
+	float DashTiming = 0.35f;
+
+	bool		 bIsAiming = false;
+	bool		 bIsInverting = false;
+	EPlayerState PlayerState = EPlayerState::Walking;
+
+	FTimerHandle DashTimerHandle;
+	FVector2D	 LastDashInput2D;
+	FVector2D	 PreviousDashInput2D;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Audio")
+	USoundBase* DashSound;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Audio")
+	USoundBase* ChargedJumpSound;
 
 public:
 	/** Returns the first person mesh **/

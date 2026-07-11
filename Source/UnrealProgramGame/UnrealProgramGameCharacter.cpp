@@ -8,6 +8,8 @@
 #include "EnhancedInputComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "InputActionValue.h"
+#include "Kismet/GameplayStatics.h"
+#include "TimerManager.h"
 #include "UnrealProgramGame.h"
 
 AUnrealProgramGameCharacter::AUnrealProgramGameCharacter()
@@ -45,6 +47,9 @@ AUnrealProgramGameCharacter::AUnrealProgramGameCharacter()
 	GetCharacterMovement()->AirControl = 0.5f;
 
 	GetCharacterMovement()->GetNavAgentPropertiesRef().bCanCrouch = true;
+	GetCharacterMovement()->GetNavAgentPropertiesRef().bCanFly = true;
+
+	PrimaryActorTick.bCanEverTick = true;
 }
 
 void AUnrealProgramGameCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -53,12 +58,17 @@ void AUnrealProgramGameCharacter::SetupPlayerInputComponent(UInputComponent* Pla
 	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))
 	{
 		// Jumping
-		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &AUnrealProgramGameCharacter::DoJumpStart);
+		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &AUnrealProgramGameCharacter::DoJumpStart);
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &AUnrealProgramGameCharacter::DoJumpEnd);
+		EnhancedInputComponent->BindAction(ChargedJumpAction, ETriggerEvent::Triggered, this, &AUnrealProgramGameCharacter::DoChargedJumpStart);
+		EnhancedInputComponent->BindAction(ChargedJumpAction, ETriggerEvent::Completed, this, &AUnrealProgramGameCharacter::DoChargedJumpEnd);
+		EnhancedInputComponent->BindAction(ChargedJumpAction, ETriggerEvent::Ongoing, this, &AUnrealProgramGameCharacter::FlyUp);
 
 		// Moving
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AUnrealProgramGameCharacter::MoveInput);
 		EnhancedInputComponent->BindAction(CrouchAction, ETriggerEvent::Triggered, this, &AUnrealProgramGameCharacter::CrouchInput);
+		EnhancedInputComponent->BindAction(DashedAction, ETriggerEvent::Started, this, &AUnrealProgramGameCharacter::DashedStarted);
+		EnhancedInputComponent->BindAction(DashedAction, ETriggerEvent::Triggered, this, &AUnrealProgramGameCharacter::DashedTriggered);
 
 		// Looking/Aiming
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AUnrealProgramGameCharacter::LookInput);
@@ -85,6 +95,12 @@ void AUnrealProgramGameCharacter::SetupPlayerInputComponent(UInputComponent* Pla
 		EnhancedInputComponent->BindAction(TriggerQualifierAction, ETriggerEvent::Canceled, this, &AUnrealProgramGameCharacter::TriggerQualifierCanceled);
 		EnhancedInputComponent->BindAction(TriggerQualifierAction, ETriggerEvent::Triggered, this, &AUnrealProgramGameCharacter::TriggerQualifierTriggered);
 		EnhancedInputComponent->BindAction(TriggerQualifierAction, ETriggerEvent::Ongoing, this, &AUnrealProgramGameCharacter::TriggerQualifierOngoing);
+
+		EnhancedInputComponent->BindAction(WalkAction, ETriggerEvent::Triggered, this, &AUnrealProgramGameCharacter::WalkInputTriggered);
+		EnhancedInputComponent->BindAction(RunAction, ETriggerEvent::Triggered, this, &AUnrealProgramGameCharacter::RunInputTriggered);
+		EnhancedInputComponent->BindAction(RunAction, ETriggerEvent::Ongoing, this, &AUnrealProgramGameCharacter::FlyDown);
+
+		EnhancedInputComponent->BindAction(FlyModeAction, ETriggerEvent::Triggered, this, &AUnrealProgramGameCharacter::FlyInput);
 	}
 	else
 	{
@@ -92,22 +108,38 @@ void AUnrealProgramGameCharacter::SetupPlayerInputComponent(UInputComponent* Pla
 	}
 }
 
+void AUnrealProgramGameCharacter::BeginPlay()
+{
+	Super::BeginPlay();
+
+	DefaultCameraRelativeLocation = FirstPersonCameraComponent->GetRelativeLocation();
+	TargetCameraRelativeLocation = DefaultCameraRelativeLocation;
+}
+
+void AUnrealProgramGameCharacter::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	FVector CurrentLocation = FirstPersonCameraComponent->GetRelativeLocation();
+	if (!CurrentLocation.Equals(TargetCameraRelativeLocation))
+	{
+		FVector NewLocation = FMath::VInterpTo(CurrentLocation, TargetCameraRelativeLocation, DeltaTime, CameraInterpSpeed);
+		FirstPersonCameraComponent->SetRelativeLocation(NewLocation);
+	}
+}
+
 void AUnrealProgramGameCharacter::OnStartCrouch(float HalfHeightAdjust, float ScaledHalfHeightAdjust)
 {
 	Super::OnStartCrouch(HalfHeightAdjust, ScaledHalfHeightAdjust);
 
-	FVector NewLocation = GetFirstPersonCameraComponent()->GetRelativeLocation();
-	NewLocation.X -= CrouchedCameraOffset;
-	GetFirstPersonCameraComponent()->SetRelativeLocation(NewLocation);
+	TargetCameraRelativeLocation = DefaultCameraRelativeLocation + FVector(-CrouchedCameraOffset, 0.0f, 0.0f);
 }
 
 void AUnrealProgramGameCharacter::OnEndCrouch(float HalfHeightAdjust, float ScaledHalfHeightAdjust)
 {
 	Super::OnEndCrouch(HalfHeightAdjust, ScaledHalfHeightAdjust);
 
-	FVector NewLocation = GetFirstPersonCameraComponent()->GetRelativeLocation();
-	NewLocation.X += CrouchedCameraOffset;
-	GetFirstPersonCameraComponent()->SetRelativeLocation(NewLocation);
+	TargetCameraRelativeLocation = DefaultCameraRelativeLocation;
 }
 
 void AUnrealProgramGameCharacter::TriggerAimInputTriggered(const FInputActionValue& Value)
@@ -125,6 +157,30 @@ void AUnrealProgramGameCharacter::TriggerInvertInput(const FInputActionValue& Va
 	bIsInverting = !bIsInverting;
 }
 
+void AUnrealProgramGameCharacter::FlyInput()
+{
+	if (PlayerState == EPlayerState::Flying)
+	{
+		PlayerState = EPlayerState::Walking;
+		GetCharacterMovement()->SetMovementMode(MOVE_Walking);
+	}
+	else
+	{
+		PlayerState = EPlayerState::Flying;
+		GetCharacterMovement()->SetMovementMode(MOVE_Flying);
+	}
+}
+
+void AUnrealProgramGameCharacter::FlyUp()
+{
+	AddMovementInput(FVector::UpVector, 1.0f);
+}
+
+void AUnrealProgramGameCharacter::FlyDown()
+{
+	AddMovementInput(FVector::UpVector, -1.0f);
+}
+
 void AUnrealProgramGameCharacter::MoveInput(const FInputActionValue& Value)
 {
 	// get the Vector2D move axis
@@ -132,6 +188,84 @@ void AUnrealProgramGameCharacter::MoveInput(const FInputActionValue& Value)
 
 	// pass the axis values to the move input
 	DoMove(MovementVector.X, MovementVector.Y);
+}
+
+void AUnrealProgramGameCharacter::WalkInputTriggered(const FInputActionValue& Value)
+{
+	if (Value.Get<bool>())
+	{
+		GetCharacterMovement()->MaxWalkSpeed = MaxSneakSpeed;
+	}
+	else
+	{
+		GetCharacterMovement()->MaxWalkSpeed = MaxWalkSpeed;
+	}
+}
+
+void AUnrealProgramGameCharacter::RunInputTriggered(const FInputActionValue& Value)
+{
+	if (PlayerState == EPlayerState::Flying)
+	{
+		return;
+	}
+
+	if (Value.Get<bool>())
+	{
+		GetCharacterMovement()->MaxWalkSpeed = MaxRunSpeed;
+	}
+	else
+	{
+		GetCharacterMovement()->MaxWalkSpeed = MaxWalkSpeed;
+	}
+}
+
+void AUnrealProgramGameCharacter::DashedStarted(const FInputActionValue& Values)
+{
+	FVector2D CurrentInput = Values.Get<FVector2D>();
+
+	if (!CurrentInput.IsNearlyZero())
+	{
+		PreviousDashInput2D = LastDashInput2D;
+		LastDashInput2D = CurrentInput;
+	}
+}
+
+void AUnrealProgramGameCharacter::DashedTriggered(const FInputActionValue& Values)
+{
+	if (GetWorldTimerManager().IsTimerActive(DashTimerHandle))
+	{
+		return;
+	}
+
+	if (!LastDashInput2D.Equals(PreviousDashInput2D, 0.1f))
+	{
+		LastDashInput2D = FVector2D::ZeroVector;
+		PreviousDashInput2D = FVector2D::ZeroVector;
+		return;
+	}
+
+	if (!LastDashInput2D.IsNearlyZero())
+	{
+		FVector DashDirection = GetActorForwardVector() * LastDashInput2D.Y + GetActorRightVector() * LastDashInput2D.X;
+		DashDirection.Normalize();
+
+		LaunchCharacter(DashDirection * DashSpeed, true, true);
+
+		if (DashSound)
+		{
+			UGameplayStatics::PlaySoundAtLocation(this, DashSound, GetActorLocation());
+		}
+
+		GetWorldTimerManager().SetTimer(DashTimerHandle, this, &AUnrealProgramGameCharacter::StopDash, DashTiming, false);
+
+		LastDashInput2D = FVector2D::ZeroVector;
+		PreviousDashInput2D = FVector2D::ZeroVector;
+	}
+}
+
+void AUnrealProgramGameCharacter::StopDash()
+{
+	GetCharacterMovement()->StopMovementImmediately();
 }
 
 void AUnrealProgramGameCharacter::LookInput(const FInputActionValue& Value)
@@ -155,12 +289,10 @@ void AUnrealProgramGameCharacter::CrouchInput(const FInputActionValue& Value)
 	if (Value.Get<bool>())
 	{
 		Crouch();
-		// UE_LOG(LogTemp, Warning, TEXT("Crouch"));
 	}
 	else
 	{
 		UnCrouch();
-		// UE_LOG(LogTemp, Warning, TEXT("Un Crouch"));
 	}
 }
 
@@ -195,13 +327,48 @@ void AUnrealProgramGameCharacter::DoMove(float Right, float Forward)
 
 void AUnrealProgramGameCharacter::DoJumpStart()
 {
+	if (PlayerState == EPlayerState::Flying)
+	{
+		return;
+	}
+
 	// pass Jump to the character
 	Jump();
 }
 
 void AUnrealProgramGameCharacter::DoJumpEnd()
 {
-	// pass StopJumping to the character
+	if (PlayerState != EPlayerState::Flying)
+	{
+		// pass StopJumping to the character
+		StopJumping();
+	}
+}
+
+void AUnrealProgramGameCharacter::DoChargedJumpStart(const FInputActionValue& Value)
+{
+	if (PlayerState == EPlayerState::Flying)
+	{
+		return;
+	}
+
+	GetCharacterMovement()->JumpZVelocity = MaxChargedJumpVelocity;
+	Jump();
+
+	if (ChargedJumpSound)
+	{
+		UGameplayStatics::PlaySoundAtLocation(this, ChargedJumpSound, GetActorLocation());
+	}
+}
+
+void AUnrealProgramGameCharacter::DoChargedJumpEnd(const FInputActionValue& Value)
+{
+	if (PlayerState == EPlayerState::Flying)
+	{
+		return;
+	}
+
+	GetCharacterMovement()->JumpZVelocity = MaxJumpVelocity;
 	StopJumping();
 }
 

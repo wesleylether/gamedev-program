@@ -18,7 +18,8 @@ public class UnrealProgramGame : ModuleRules
 			"StateTreeModule",
 			"GameplayStateTreeModule",
 			"UMG",
-			"Slate"
+			"Slate",
+			"MetasoundEngine"
 		});
 
 		PrivateDependencyModuleNames.AddRange(new string[] { });
