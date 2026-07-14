@@ -19,7 +19,11 @@ public class UnrealProgramGame : ModuleRules
 			"GameplayStateTreeModule",
 			"UMG",
 			"Slate",
-			"MetasoundEngine"
+			"MetasoundEngine",
+			"GameplayAbilities",
+			"GameplayTags",
+			"GameplayTasks",
+			"NinjaGAS"
 		});
 
 		PrivateDependencyModuleNames.AddRange(new string[] { });

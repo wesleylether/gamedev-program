@@ -11,7 +11,7 @@
 			"AdditionalDependencies": [
 				"Engine",
 				"AIModule",
-				"UMG",
+				"UMG"
 			]
 		}
 	],
@@ -30,6 +30,11 @@
 		{
 			"Name": "GameplayStateTree",
 			"Enabled": true
+		},
+		{
+			"Name": "NinjaGAS",
+			"Enabled": true,
+			"MarketplaceURL": "com.epicgames.launcher://ue/Fab/product/5200fc7c-2cb4-4a2e-a204-8200cebab05d"
 		}
 	]
 }

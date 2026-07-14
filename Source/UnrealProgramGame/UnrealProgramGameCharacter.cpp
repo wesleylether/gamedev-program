@@ -1,6 +1,9 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "UnrealProgramGameCharacter.h"
+#include "AbilitySystemComponent.h"
+#include "AbilitySystem/UnrealProgramAttributeSet.h"
+#include "UnrealProgramGamePlayerController.h"
 #include "Animation/AnimInstance.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -48,6 +51,9 @@ AUnrealProgramGameCharacter::AUnrealProgramGameCharacter()
 
 	GetCharacterMovement()->GetNavAgentPropertiesRef().bCanCrouch = true;
 	GetCharacterMovement()->GetNavAgentPropertiesRef().bCanFly = true;
+
+	AbilitySystemComponent = CreateDefaultSubobject<UAbilitySystemComponent>(TEXT("AbilitySystemComponent"));
+	AttributeSet = CreateDefaultSubobject<UUnrealProgramAttributeSet>(TEXT("AttributeSet"));
 
 	PrimaryActorTick.bCanEverTick = true;
 }
@@ -112,6 +118,17 @@ void AUnrealProgramGameCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
+	if (AbilitySystemComponent)
+	{
+		AbilitySystemComponent->InitAbilityActorInfo(this, this);
+	}
+
+	if (AttributeSet)
+	{
+		AttributeSet->SetMaxStamina(100.0f);
+		AttributeSet->SetStamina(100.0f);
+	}
+
 	DefaultCameraRelativeLocation = FirstPersonCameraComponent->GetRelativeLocation();
 	TargetCameraRelativeLocation = DefaultCameraRelativeLocation;
 }
@@ -119,6 +136,47 @@ void AUnrealProgramGameCharacter::BeginPlay()
 void AUnrealProgramGameCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	if (AttributeSet)
+	{
+		float CurrentStamina = AttributeSet->GetStamina();
+		float MaxStamina = AttributeSet->GetMaxStamina();
+
+		// Handle Regeneration
+		if (CurrentStamina < MaxStamina)
+		{
+			AttributeSet->SetStamina(FMath::Min(CurrentStamina + StaminaRegenRate * DeltaTime, MaxStamina));
+		}
+
+		// Handle Run Consumption
+		if (GetCharacterMovement()->MaxWalkSpeed == MaxRunSpeed && GetVelocity().Size() > 0.0f)
+		{
+			if (CurrentStamina > 0.0f)
+			{
+				AttributeSet->SetStamina(FMath::Max(AttributeSet->GetStamina() - RunStaminaCost * DeltaTime, 0.0f));
+			}
+			else
+			{
+				// Out of stamina, stop running
+				GetCharacterMovement()->MaxWalkSpeed = MaxWalkSpeed;
+			}
+		}
+
+		// Depleted Message
+		if (AttributeSet->GetStamina() <= 0.0f)
+		{
+			if (GEngine)
+			{
+				GEngine->AddOnScreenDebugMessage(100, 0.1f, FColor::Red, TEXT("Stamina depleted"));
+			}
+		}
+
+		// Update UI
+		if (AUnrealProgramGamePlayerController* PC = Cast<AUnrealProgramGamePlayerController>(GetController()))
+		{
+			PC->UpdateStamina(MaxStamina > 0.0f ? AttributeSet->GetStamina() / MaxStamina : 0.0f);
+		}
+	}
 
 	FVector CurrentLocation = FirstPersonCameraComponent->GetRelativeLocation();
 	if (!CurrentLocation.Equals(TargetCameraRelativeLocation))
@@ -209,7 +267,7 @@ void AUnrealProgramGameCharacter::RunInputTriggered(const FInputActionValue& Val
 		return;
 	}
 
-	if (Value.Get<bool>())
+	if (Value.Get<bool>() && AttributeSet && AttributeSet->GetStamina() > 0.0f)
 	{
 		GetCharacterMovement()->MaxWalkSpeed = MaxRunSpeed;
 	}
@@ -237,6 +295,11 @@ void AUnrealProgramGameCharacter::DashedTriggered(const FInputActionValue& Value
 		return;
 	}
 
+	if (!AttributeSet || AttributeSet->GetStamina() < DashStaminaCost)
+	{
+		return;
+	}
+
 	if (!LastDashInput2D.Equals(PreviousDashInput2D, 0.1f))
 	{
 		LastDashInput2D = FVector2D::ZeroVector;
@@ -250,6 +313,8 @@ void AUnrealProgramGameCharacter::DashedTriggered(const FInputActionValue& Value
 		DashDirection.Normalize();
 
 		LaunchCharacter(DashDirection * DashSpeed, true, true);
+
+		AttributeSet->SetStamina(AttributeSet->GetStamina() - DashStaminaCost);
 
 		if (DashSound)
 		{
@@ -352,8 +417,15 @@ void AUnrealProgramGameCharacter::DoChargedJumpStart(const FInputActionValue& Va
 		return;
 	}
 
+	if (!AttributeSet || AttributeSet->GetStamina() < ChargedJumpStaminaCost)
+	{
+		return;
+	}
+
 	GetCharacterMovement()->JumpZVelocity = MaxChargedJumpVelocity;
 	Jump();
+
+	AttributeSet->SetStamina(AttributeSet->GetStamina() - ChargedJumpStaminaCost);
 
 	if (ChargedJumpSound)
 	{
@@ -370,6 +442,11 @@ void AUnrealProgramGameCharacter::DoChargedJumpEnd(const FInputActionValue& Valu
 
 	GetCharacterMovement()->JumpZVelocity = MaxJumpVelocity;
 	StopJumping();
+}
+
+UAbilitySystemComponent* AUnrealProgramGameCharacter::GetAbilitySystemComponent() const
+{
+	return AbilitySystemComponent;
 }
 
 void AUnrealProgramGameCharacter::RotateInput(const FInputActionInstance& Instance)

@@ -6,6 +6,8 @@
 #include "GameFramework/Character.h"
 #include "InputAction.h"
 #include "Logging/LogMacros.h"
+#include "AbilitySystemInterface.h"
+#include "GameplayTagContainer.h"
 #include "UnrealProgramGameCharacter.generated.h"
 
 UENUM(BlueprintType)
@@ -27,7 +29,7 @@ DECLARE_LOG_CATEGORY_EXTERN(LogTemplateCharacter, Log, All);
  *  A basic first person character
  */
 UCLASS(abstract)
-class AUnrealProgramGameCharacter : public ACharacter
+class AUnrealProgramGameCharacter : public ACharacter, public IAbilitySystemInterface
 {
 	GENERATED_BODY()
 
@@ -38,6 +40,12 @@ class AUnrealProgramGameCharacter : public ACharacter
 	/** First person camera */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	UCameraComponent* FirstPersonCameraComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
+	class UAbilitySystemComponent* AbilitySystemComponent;
+
+	UPROPERTY()
+	class UUnrealProgramAttributeSet* AttributeSet;
 
 protected:
 	/** Jump Input Action */
@@ -98,6 +106,8 @@ public:
 	AUnrealProgramGameCharacter();
 
 	virtual void Tick(float DeltaTime) override;
+
+	virtual class UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 
 protected:
 	virtual void BeginPlay() override;
@@ -195,6 +205,18 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character")
 	float DashTiming = 0.35f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stamina")
+	float RunStaminaCost = 5.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stamina")
+	float ChargedJumpStaminaCost = 20.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stamina")
+	float DashStaminaCost = 15.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stamina")
+	float StaminaRegenRate = 1.0f;
 
 	bool		 bIsAiming = false;
 	bool		 bIsInverting = false;

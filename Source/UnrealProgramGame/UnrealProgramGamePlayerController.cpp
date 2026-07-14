@@ -1,13 +1,13 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
-
 #include "UnrealProgramGamePlayerController.h"
-#include "EnhancedInputSubsystems.h"
-#include "Engine/LocalPlayer.h"
-#include "InputMappingContext.h"
-#include "UnrealProgramGameCameraManager.h"
 #include "Blueprint/UserWidget.h"
+#include "Engine/LocalPlayer.h"
+#include "EnhancedInputSubsystems.h"
+#include "InputMappingContext.h"
+#include "UI/MyMainDashboard.h"
 #include "UnrealProgramGame.h"
+#include "UnrealProgramGameCameraManager.h"
 #include "Widgets/Input/SVirtualJoystick.h"
 
 AUnrealProgramGamePlayerController::AUnrealProgramGamePlayerController()
@@ -16,11 +16,18 @@ AUnrealProgramGamePlayerController::AUnrealProgramGamePlayerController()
 	PlayerCameraManagerClass = AUnrealProgramGameCameraManager::StaticClass();
 }
 
+void AUnrealProgramGamePlayerController::UpdateStamina(float Percentage)
+{
+	if (MainDashboardWidget)
+	{
+		MainDashboardWidget->UpdateStamina(Percentage);
+	}
+}
+
 void AUnrealProgramGamePlayerController::BeginPlay()
 {
 	Super::BeginPlay();
 
-	
 	// only spawn touch controls on local player controllers
 	if (ShouldUseTouchControls() && IsLocalPlayerController())
 	{
@@ -31,13 +38,21 @@ void AUnrealProgramGamePlayerController::BeginPlay()
 		{
 			// add the controls to the player screen
 			MobileControlsWidget->AddToPlayerScreen(0);
-
-		} else {
+		}
+		else
+		{
 
 			UE_LOG(LogUnrealProgramGame, Error, TEXT("Could not spawn mobile controls widget."));
-
 		}
+	}
 
+	if (MainDashboardClass)
+	{
+		MainDashboardWidget = CreateWidget<UMyMainDashboard>(this, MainDashboardClass);
+		if (MainDashboardWidget)
+		{
+			MainDashboardWidget->AddToViewport();
+		}
 	}
 }
 
@@ -66,7 +81,6 @@ void AUnrealProgramGamePlayerController::SetupInputComponent()
 			}
 		}
 	}
-	
 }
 
 bool AUnrealProgramGamePlayerController::ShouldUseTouchControls() const
