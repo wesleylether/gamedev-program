@@ -1,9 +1,8 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "UnrealProgramGameCharacter.h"
+#include "AbilitySystem/AttributeSets/PlayerAttributeSet.h"
 #include "AbilitySystemComponent.h"
-#include "AbilitySystem/UnrealProgramAttributeSet.h"
-#include "UnrealProgramGamePlayerController.h"
 #include "Animation/AnimInstance.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -14,6 +13,11 @@
 #include "Kismet/GameplayStatics.h"
 #include "TimerManager.h"
 #include "UnrealProgramGame.h"
+#include "UnrealProgramGamePlayerController.h"
+
+// -------------------------------------------------------------------------
+// Core & Initialization
+// -------------------------------------------------------------------------
 
 AUnrealProgramGameCharacter::AUnrealProgramGameCharacter()
 {
@@ -53,9 +57,62 @@ AUnrealProgramGameCharacter::AUnrealProgramGameCharacter()
 	GetCharacterMovement()->GetNavAgentPropertiesRef().bCanFly = true;
 
 	AbilitySystemComponent = CreateDefaultSubobject<UAbilitySystemComponent>(TEXT("AbilitySystemComponent"));
-	AttributeSet = CreateDefaultSubobject<UUnrealProgramAttributeSet>(TEXT("AttributeSet"));
+	AttributeSet = CreateDefaultSubobject<UPlayerAttributeSet>(TEXT("AttributeSet"));
 
 	PrimaryActorTick.bCanEverTick = true;
+}
+
+void AUnrealProgramGameCharacter::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	if (AttributeSet)
+	{
+		float CurrentStamina = AttributeSet->GetStamina();
+		float MaxStamina = AttributeSet->GetMaxStamina();
+
+		// Handle Regeneration
+		if (CurrentStamina < MaxStamina)
+		{
+			AttributeSet->SetStamina(FMath::Min(CurrentStamina + StaminaRegenRate * DeltaTime, MaxStamina));
+		}
+
+		// Handle Run Consumption
+		if (GetCharacterMovement()->MaxWalkSpeed == MaxRunSpeed && GetVelocity().Size() > 0.0f)
+		{
+			if (CurrentStamina > 0.0f)
+			{
+				AttributeSet->SetStamina(FMath::Max(AttributeSet->GetStamina() - RunStaminaCost * DeltaTime, 0.0f));
+			}
+			else
+			{
+				// Out of stamina, stop running
+				GetCharacterMovement()->MaxWalkSpeed = MaxWalkSpeed;
+			}
+		}
+
+		// Depleted Message
+		if (AttributeSet->GetStamina() <= 0.0f)
+		{
+			if (GEngine)
+			{
+				GEngine->AddOnScreenDebugMessage(100, 0.1f, FColor::Red, TEXT("Stamina depleted"));
+			}
+		}
+
+		// Update UI
+		if (AUnrealProgramGamePlayerController* PC = Cast<AUnrealProgramGamePlayerController>(GetController()))
+		{
+			PC->UpdateStamina(MaxStamina > 0.0f ? AttributeSet->GetStamina() / MaxStamina : 0.0f);
+		}
+	}
+
+	FVector CurrentLocation = FirstPersonCameraComponent->GetRelativeLocation();
+	if (!CurrentLocation.Equals(TargetCameraRelativeLocation))
+	{
+		FVector NewLocation = FMath::VInterpTo(CurrentLocation, TargetCameraRelativeLocation, DeltaTime, CameraInterpSpeed);
+		FirstPersonCameraComponent->SetRelativeLocation(NewLocation);
+	}
 }
 
 void AUnrealProgramGameCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -114,6 +171,19 @@ void AUnrealProgramGameCharacter::SetupPlayerInputComponent(UInputComponent* Pla
 	}
 }
 
+// -------------------------------------------------------------------------
+// Interfaces
+// -------------------------------------------------------------------------
+
+UAbilitySystemComponent* AUnrealProgramGameCharacter::GetAbilitySystemComponent() const
+{
+	return AbilitySystemComponent;
+}
+
+// -------------------------------------------------------------------------
+// Engine Overrides
+// -------------------------------------------------------------------------
+
 void AUnrealProgramGameCharacter::BeginPlay()
 {
 	Super::BeginPlay();
@@ -121,69 +191,11 @@ void AUnrealProgramGameCharacter::BeginPlay()
 	if (AbilitySystemComponent)
 	{
 		AbilitySystemComponent->InitAbilityActorInfo(this, this);
-	}
-
-	if (AttributeSet)
-	{
-		AttributeSet->SetMaxStamina(100.0f);
-		AttributeSet->SetStamina(100.0f);
+		GiveAbilities();
 	}
 
 	DefaultCameraRelativeLocation = FirstPersonCameraComponent->GetRelativeLocation();
 	TargetCameraRelativeLocation = DefaultCameraRelativeLocation;
-}
-
-void AUnrealProgramGameCharacter::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
-	if (AttributeSet)
-	{
-		float CurrentStamina = AttributeSet->GetStamina();
-		float MaxStamina = AttributeSet->GetMaxStamina();
-
-		// Handle Regeneration
-		if (CurrentStamina < MaxStamina)
-		{
-			AttributeSet->SetStamina(FMath::Min(CurrentStamina + StaminaRegenRate * DeltaTime, MaxStamina));
-		}
-
-		// Handle Run Consumption
-		if (GetCharacterMovement()->MaxWalkSpeed == MaxRunSpeed && GetVelocity().Size() > 0.0f)
-		{
-			if (CurrentStamina > 0.0f)
-			{
-				AttributeSet->SetStamina(FMath::Max(AttributeSet->GetStamina() - RunStaminaCost * DeltaTime, 0.0f));
-			}
-			else
-			{
-				// Out of stamina, stop running
-				GetCharacterMovement()->MaxWalkSpeed = MaxWalkSpeed;
-			}
-		}
-
-		// Depleted Message
-		if (AttributeSet->GetStamina() <= 0.0f)
-		{
-			if (GEngine)
-			{
-				GEngine->AddOnScreenDebugMessage(100, 0.1f, FColor::Red, TEXT("Stamina depleted"));
-			}
-		}
-
-		// Update UI
-		if (AUnrealProgramGamePlayerController* PC = Cast<AUnrealProgramGamePlayerController>(GetController()))
-		{
-			PC->UpdateStamina(MaxStamina > 0.0f ? AttributeSet->GetStamina() / MaxStamina : 0.0f);
-		}
-	}
-
-	FVector CurrentLocation = FirstPersonCameraComponent->GetRelativeLocation();
-	if (!CurrentLocation.Equals(TargetCameraRelativeLocation))
-	{
-		FVector NewLocation = FMath::VInterpTo(CurrentLocation, TargetCameraRelativeLocation, DeltaTime, CameraInterpSpeed);
-		FirstPersonCameraComponent->SetRelativeLocation(NewLocation);
-	}
 }
 
 void AUnrealProgramGameCharacter::OnStartCrouch(float HalfHeightAdjust, float ScaledHalfHeightAdjust)
@@ -200,45 +212,29 @@ void AUnrealProgramGameCharacter::OnEndCrouch(float HalfHeightAdjust, float Scal
 	TargetCameraRelativeLocation = DefaultCameraRelativeLocation;
 }
 
-void AUnrealProgramGameCharacter::TriggerAimInputTriggered(const FInputActionValue& Value)
-{
-	bIsAiming = true;
-}
+// -------------------------------------------------------------------------
+// Gameplay Ability System (GAS)
+// -------------------------------------------------------------------------
 
-void AUnrealProgramGameCharacter::TriggerAimInputCompleted(const FInputActionValue& Value)
+void AUnrealProgramGameCharacter::GiveAbilities()
 {
-	bIsAiming = false;
-}
+	if (!HasAuthority() || !AbilitySystemComponent)
+		return;
 
-void AUnrealProgramGameCharacter::TriggerInvertInput(const FInputActionValue& Value)
-{
-	bIsInverting = !bIsInverting;
-}
-
-void AUnrealProgramGameCharacter::FlyInput()
-{
-	if (PlayerState == EPlayerState::Flying)
+	for (TSubclassOf<UGameplayAbility>& Ability : DefaultAbilities)
 	{
-		PlayerState = EPlayerState::Walking;
-		GetCharacterMovement()->SetMovementMode(MOVE_Walking);
-	}
-	else
-	{
-		PlayerState = EPlayerState::Flying;
-		GetCharacterMovement()->SetMovementMode(MOVE_Flying);
+		if (Ability)
+		{
+			AbilitySystemComponent->GiveAbility(FGameplayAbilitySpec(Ability, 1, INDEX_NONE, this));
+		}
 	}
 }
 
-void AUnrealProgramGameCharacter::FlyUp()
-{
-	AddMovementInput(FVector::UpVector, 1.0f);
-}
+// -------------------------------------------------------------------------
+// Input Handling Functions
+// -------------------------------------------------------------------------
 
-void AUnrealProgramGameCharacter::FlyDown()
-{
-	AddMovementInput(FVector::UpVector, -1.0f);
-}
-
+// Movement
 void AUnrealProgramGameCharacter::MoveInput(const FInputActionValue& Value)
 {
 	// get the Vector2D move axis
@@ -277,6 +273,19 @@ void AUnrealProgramGameCharacter::RunInputTriggered(const FInputActionValue& Val
 	}
 }
 
+void AUnrealProgramGameCharacter::CrouchInput(const FInputActionValue& Value)
+{
+	if (Value.Get<bool>())
+	{
+		Crouch();
+	}
+	else
+	{
+		UnCrouch();
+	}
+}
+
+// Jumping & Dashing
 void AUnrealProgramGameCharacter::DashedStarted(const FInputActionValue& Values)
 {
 	FVector2D CurrentInput = Values.Get<FVector2D>();
@@ -333,6 +342,66 @@ void AUnrealProgramGameCharacter::StopDash()
 	GetCharacterMovement()->StopMovementImmediately();
 }
 
+void AUnrealProgramGameCharacter::DoChargedJumpStart(const FInputActionValue& Value)
+{
+	if (PlayerState == EPlayerState::Flying)
+	{
+		return;
+	}
+
+	if (!AttributeSet || AttributeSet->GetStamina() < ChargedJumpStaminaCost)
+	{
+		return;
+	}
+
+	GetCharacterMovement()->JumpZVelocity = MaxChargedJumpVelocity;
+	Jump();
+
+	AttributeSet->SetStamina(AttributeSet->GetStamina() - ChargedJumpStaminaCost);
+
+	if (ChargedJumpSound)
+	{
+		UGameplayStatics::PlaySoundAtLocation(this, ChargedJumpSound, GetActorLocation());
+	}
+}
+
+void AUnrealProgramGameCharacter::DoChargedJumpEnd(const FInputActionValue& Value)
+{
+	if (PlayerState == EPlayerState::Flying)
+	{
+		return;
+	}
+
+	GetCharacterMovement()->JumpZVelocity = MaxJumpVelocity;
+	StopJumping();
+}
+
+// Flying
+void AUnrealProgramGameCharacter::FlyInput()
+{
+	if (PlayerState == EPlayerState::Flying)
+	{
+		PlayerState = EPlayerState::Walking;
+		GetCharacterMovement()->SetMovementMode(MOVE_Walking);
+	}
+	else
+	{
+		PlayerState = EPlayerState::Flying;
+		GetCharacterMovement()->SetMovementMode(MOVE_Flying);
+	}
+}
+
+void AUnrealProgramGameCharacter::FlyUp()
+{
+	AddMovementInput(FVector::UpVector, 1.0f);
+}
+
+void AUnrealProgramGameCharacter::FlyDown()
+{
+	AddMovementInput(FVector::UpVector, -1.0f);
+}
+
+// Looking & Aiming
 void AUnrealProgramGameCharacter::LookInput(const FInputActionValue& Value)
 {
 	// get the Vector2D look axis
@@ -349,18 +418,59 @@ void AUnrealProgramGameCharacter::LookInput(const FInputActionValue& Value)
 	}
 }
 
-void AUnrealProgramGameCharacter::CrouchInput(const FInputActionValue& Value)
+void AUnrealProgramGameCharacter::RotateInput(const FInputActionInstance& Instance)
 {
-	if (Value.Get<bool>())
+
+	float AxisValue = Instance.GetValue().Get<float>();
+
+	if (GEngine)
 	{
-		Crouch();
+		GEngine->AddOnScreenDebugMessage(1, 3.0f, FColor::White, FString::Printf(TEXT("Value: %f"), AxisValue));
 	}
-	else
+
+	if (GetController() && AxisValue != 0.0f)
 	{
-		UnCrouch();
+		float DeltaYaw = AxisValue * 50.0f * GetWorld()->GetDeltaSeconds();
+
+		FRotator CurrentRotation = GetController()->GetControlRotation();
+		CurrentRotation.Yaw += DeltaYaw;
+
+		GetController()->SetControlRotation(CurrentRotation);
 	}
 }
 
+void AUnrealProgramGameCharacter::RotateTriggerOngoing(const FInputActionInstance& Instance)
+{
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(2, 3.0f, FColor::Green, FString::Printf(TEXT("Ongoing: %f"), Instance.GetElapsedTime()));
+	}
+}
+
+void AUnrealProgramGameCharacter::RotateTriggerTriggered(const FInputActionInstance& Instance)
+{
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(3, 3.0f, FColor::Blue, FString::Printf(TEXT("Triggered: %f"), Instance.GetTriggeredTime()));
+	}
+}
+
+void AUnrealProgramGameCharacter::TriggerAimInputTriggered(const FInputActionValue& Value)
+{
+	bIsAiming = true;
+}
+
+void AUnrealProgramGameCharacter::TriggerAimInputCompleted(const FInputActionValue& Value)
+{
+	bIsAiming = false;
+}
+
+void AUnrealProgramGameCharacter::TriggerInvertInput(const FInputActionValue& Value)
+{
+	bIsInverting = !bIsInverting;
+}
+
+// Blueprint Callables for generic Inputs (UI/Controls)
 void AUnrealProgramGameCharacter::DoAim(float Yaw, float Pitch)
 {
 	if (GetController())
@@ -410,81 +520,7 @@ void AUnrealProgramGameCharacter::DoJumpEnd()
 	}
 }
 
-void AUnrealProgramGameCharacter::DoChargedJumpStart(const FInputActionValue& Value)
-{
-	if (PlayerState == EPlayerState::Flying)
-	{
-		return;
-	}
-
-	if (!AttributeSet || AttributeSet->GetStamina() < ChargedJumpStaminaCost)
-	{
-		return;
-	}
-
-	GetCharacterMovement()->JumpZVelocity = MaxChargedJumpVelocity;
-	Jump();
-
-	AttributeSet->SetStamina(AttributeSet->GetStamina() - ChargedJumpStaminaCost);
-
-	if (ChargedJumpSound)
-	{
-		UGameplayStatics::PlaySoundAtLocation(this, ChargedJumpSound, GetActorLocation());
-	}
-}
-
-void AUnrealProgramGameCharacter::DoChargedJumpEnd(const FInputActionValue& Value)
-{
-	if (PlayerState == EPlayerState::Flying)
-	{
-		return;
-	}
-
-	GetCharacterMovement()->JumpZVelocity = MaxJumpVelocity;
-	StopJumping();
-}
-
-UAbilitySystemComponent* AUnrealProgramGameCharacter::GetAbilitySystemComponent() const
-{
-	return AbilitySystemComponent;
-}
-
-void AUnrealProgramGameCharacter::RotateInput(const FInputActionInstance& Instance)
-{
-
-	float AxisValue = Instance.GetValue().Get<float>();
-
-	if (GEngine)
-	{
-		GEngine->AddOnScreenDebugMessage(1, 3.0f, FColor::White, FString::Printf(TEXT("Value: %f"), AxisValue));
-	}
-
-	if (GetController() && AxisValue != 0.0f)
-	{
-		float DeltaYaw = AxisValue * 50.0f * GetWorld()->GetDeltaSeconds();
-
-		FRotator CurrentRotation = GetController()->GetControlRotation();
-		CurrentRotation.Yaw += DeltaYaw;
-
-		GetController()->SetControlRotation(CurrentRotation);
-	}
-}
-
-void AUnrealProgramGameCharacter::RotateTriggerOngoing(const FInputActionInstance& Instance)
-{
-	if (GEngine)
-	{
-		GEngine->AddOnScreenDebugMessage(2, 3.0f, FColor::Green, FString::Printf(TEXT("Ongoing: %f"), Instance.GetElapsedTime()));
-	}
-}
-void AUnrealProgramGameCharacter::RotateTriggerTriggered(const FInputActionInstance& Instance)
-{
-	if (GEngine)
-	{
-		GEngine->AddOnScreenDebugMessage(3, 3.0f, FColor::Blue, FString::Printf(TEXT("Triggered: %f"), Instance.GetTriggeredTime()));
-	}
-}
-
+// Testing / Qualifiers
 void AUnrealProgramGameCharacter::TriggerStateTestStarted(const FInputActionValue& Value)
 {
 	if (GEngine)

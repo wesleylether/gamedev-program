@@ -22,8 +22,7 @@ public class UnrealProgramGame : ModuleRules
 			"MetasoundEngine",
 			"GameplayAbilities",
 			"GameplayTags",
-			"GameplayTasks",
-			"NinjaGAS"
+			"GameplayTasks"
 		});
 
 		PrivateDependencyModuleNames.AddRange(new string[] { });
