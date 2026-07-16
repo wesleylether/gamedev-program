@@ -120,31 +120,26 @@ void AUnrealProgramGameCharacter::SetupPlayerInputComponent(UInputComponent* Pla
 	// Set up action bindings
 	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))
 	{
-		// Jumping
-		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &AUnrealProgramGameCharacter::DoJumpStart);
-		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &AUnrealProgramGameCharacter::DoJumpEnd);
-		EnhancedInputComponent->BindAction(ChargedJumpAction, ETriggerEvent::Triggered, this, &AUnrealProgramGameCharacter::DoChargedJumpStart);
-		EnhancedInputComponent->BindAction(ChargedJumpAction, ETriggerEvent::Completed, this, &AUnrealProgramGameCharacter::DoChargedJumpEnd);
-		EnhancedInputComponent->BindAction(ChargedJumpAction, ETriggerEvent::Ongoing, this, &AUnrealProgramGameCharacter::FlyUp);
-
-		// Moving
+		// Movement
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AUnrealProgramGameCharacter::MoveInput);
+		EnhancedInputComponent->BindAction(WalkAction, ETriggerEvent::Triggered, this, &AUnrealProgramGameCharacter::WalkInputTriggered);
+		EnhancedInputComponent->BindAction(RunAction, ETriggerEvent::Triggered, this, &AUnrealProgramGameCharacter::RunInputTriggered);
 		EnhancedInputComponent->BindAction(CrouchAction, ETriggerEvent::Triggered, this, &AUnrealProgramGameCharacter::CrouchInput);
+
+		// Jumping & Dashing
 		EnhancedInputComponent->BindAction(DashedAction, ETriggerEvent::Started, this, &AUnrealProgramGameCharacter::DashedStarted);
 		EnhancedInputComponent->BindAction(DashedAction, ETriggerEvent::Triggered, this, &AUnrealProgramGameCharacter::DashedTriggered);
+		EnhancedInputComponent->BindAction(ChargedJumpAction, ETriggerEvent::Triggered, this, &AUnrealProgramGameCharacter::DoChargedJumpStart);
+		EnhancedInputComponent->BindAction(ChargedJumpAction, ETriggerEvent::Completed, this, &AUnrealProgramGameCharacter::DoChargedJumpEnd);
 
-		// Looking/Aiming
+		// Flying
+		EnhancedInputComponent->BindAction(FlyModeAction, ETriggerEvent::Triggered, this, &AUnrealProgramGameCharacter::FlyInput);
+		EnhancedInputComponent->BindAction(ChargedJumpAction, ETriggerEvent::Ongoing, this, &AUnrealProgramGameCharacter::FlyUp);
+		EnhancedInputComponent->BindAction(RunAction, ETriggerEvent::Ongoing, this, &AUnrealProgramGameCharacter::FlyDown);
+
+		// Looking & Aiming
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AUnrealProgramGameCharacter::LookInput);
 		EnhancedInputComponent->BindAction(MouseLookAction, ETriggerEvent::Triggered, this, &AUnrealProgramGameCharacter::LookInput);
-
-		// Trigger State Tests Module 1-1
-		EnhancedInputComponent->BindAction(TriggerStateTestAction, ETriggerEvent::Started, this, &AUnrealProgramGameCharacter::TriggerStateTestStarted);
-		EnhancedInputComponent->BindAction(TriggerStateTestAction, ETriggerEvent::Completed, this, &AUnrealProgramGameCharacter::TriggerStateTestCompleted);
-		EnhancedInputComponent->BindAction(TriggerStateTestAction, ETriggerEvent::Canceled, this, &AUnrealProgramGameCharacter::TriggerStateTestCanceled);
-		EnhancedInputComponent->BindAction(TriggerStateTestAction, ETriggerEvent::Triggered, this, &AUnrealProgramGameCharacter::TriggerStateTestTriggered);
-		EnhancedInputComponent->BindAction(TriggerStateTestAction, ETriggerEvent::Ongoing, this, &AUnrealProgramGameCharacter::TriggerStateTestOngoing);
-
-		// Rotate Module 1-2
 		EnhancedInputComponent->BindAction(RotateAction, ETriggerEvent::Triggered, this, &AUnrealProgramGameCharacter::RotateInput);
 		EnhancedInputComponent->BindAction(RotateAction, ETriggerEvent::Ongoing, this, &AUnrealProgramGameCharacter::RotateTriggerOngoing);
 		EnhancedInputComponent->BindAction(RotateAction, ETriggerEvent::Triggered, this, &AUnrealProgramGameCharacter::RotateTriggerTriggered);
@@ -152,18 +147,22 @@ void AUnrealProgramGameCharacter::SetupPlayerInputComponent(UInputComponent* Pla
 		EnhancedInputComponent->BindAction(TriggerAimAction, ETriggerEvent::Completed, this, &AUnrealProgramGameCharacter::TriggerAimInputCompleted);
 		EnhancedInputComponent->BindAction(TriggerInvertAction, ETriggerEvent::Triggered, this, &AUnrealProgramGameCharacter::TriggerInvertInput);
 
-		// Trigger Qualifiers Module 1-3
+		// Blueprint Callables for generic Inputs (UI/Controls)
+		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &AUnrealProgramGameCharacter::DoJumpStart);
+		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &AUnrealProgramGameCharacter::DoJumpEnd);
+
+		// Testing / Qualifiers
+		EnhancedInputComponent->BindAction(TriggerStateTestAction, ETriggerEvent::Started, this, &AUnrealProgramGameCharacter::TriggerStateTestStarted);
+		EnhancedInputComponent->BindAction(TriggerStateTestAction, ETriggerEvent::Completed, this, &AUnrealProgramGameCharacter::TriggerStateTestCompleted);
+		EnhancedInputComponent->BindAction(TriggerStateTestAction, ETriggerEvent::Canceled, this, &AUnrealProgramGameCharacter::TriggerStateTestCanceled);
+		EnhancedInputComponent->BindAction(TriggerStateTestAction, ETriggerEvent::Triggered, this, &AUnrealProgramGameCharacter::TriggerStateTestTriggered);
+		EnhancedInputComponent->BindAction(TriggerStateTestAction, ETriggerEvent::Ongoing, this, &AUnrealProgramGameCharacter::TriggerStateTestOngoing);
+
 		EnhancedInputComponent->BindAction(TriggerQualifierAction, ETriggerEvent::Started, this, &AUnrealProgramGameCharacter::TriggerQualifierStarted);
 		EnhancedInputComponent->BindAction(TriggerQualifierAction, ETriggerEvent::Completed, this, &AUnrealProgramGameCharacter::TriggerQualifierCompleted);
 		EnhancedInputComponent->BindAction(TriggerQualifierAction, ETriggerEvent::Canceled, this, &AUnrealProgramGameCharacter::TriggerQualifierCanceled);
 		EnhancedInputComponent->BindAction(TriggerQualifierAction, ETriggerEvent::Triggered, this, &AUnrealProgramGameCharacter::TriggerQualifierTriggered);
 		EnhancedInputComponent->BindAction(TriggerQualifierAction, ETriggerEvent::Ongoing, this, &AUnrealProgramGameCharacter::TriggerQualifierOngoing);
-
-		EnhancedInputComponent->BindAction(WalkAction, ETriggerEvent::Triggered, this, &AUnrealProgramGameCharacter::WalkInputTriggered);
-		EnhancedInputComponent->BindAction(RunAction, ETriggerEvent::Triggered, this, &AUnrealProgramGameCharacter::RunInputTriggered);
-		EnhancedInputComponent->BindAction(RunAction, ETriggerEvent::Ongoing, this, &AUnrealProgramGameCharacter::FlyDown);
-
-		EnhancedInputComponent->BindAction(FlyModeAction, ETriggerEvent::Triggered, this, &AUnrealProgramGameCharacter::FlyInput);
 	}
 	else
 	{
