@@ -2,7 +2,6 @@
 
 #include "RunAbility.h"
 
-#include "AbilitySystem/Effects/StaminaCostEffect.h"
 #include "AbilitySystem/Effects/StaminaDrainEffect.h"
 #include "AbilitySystem/FGameplayTags.h"
 #include "AbilitySystemComponent.h"
@@ -15,9 +14,8 @@ URunAbility::URunAbility()
 	DefaultWalkSpeed = 600.0f;
 	SprintSpeedMultiplier = 1.6f;
 
-	const FGameplayTags& Tag = FGameplayTags::Get();
-	AbilityTags.AddTag(Tag.Ability_Run);
-	ActivationOwnedTags.AddTag(Tag.State_Running);
+	SetAssetTags(FGameplayTagContainer(GTag::Abilities::Player::Run));
+	ActivationOwnedTags.AddTag(GTag::Abilities::State::Running);
 
 	CostGameplayEffectClass = UStaminaDrainEffect::StaticClass();
 }

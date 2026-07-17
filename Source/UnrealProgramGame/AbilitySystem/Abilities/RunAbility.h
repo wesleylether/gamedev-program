@@ -14,6 +14,7 @@ class UNREALPROGRAMGAME_API URunAbility : public UGameplayAbility
 {
 	GENERATED_BODY()
 
+public:
 	URunAbility();
 
 protected:

@@ -1,22 +1,33 @@
 #include "FGameplayTags.h"
 
 #include "GameplayTagsManager.h"
+#include "NativeGameplayTags.h"
 
-FGameplayTags FGameplayTags::GameplayTags;
-
-void FGameplayTags::Initialize()
+namespace GTag
 {
-	UGameplayTagsManager& Manager = UGameplayTagsManager::Get();
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(None, "GTags.None", "None")
 
-	// Abilities
-	GameplayTags.Ability_Run = Manager.AddNativeGameplayTag(TEXT("Ability.Run"));
-	GameplayTags.Ability_Dash = Manager.AddNativeGameplayTag(TEXT("Ability.Dash"));
+	namespace Abilities
+	{
+		namespace Player
+		{
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Dash, "GTags.Abilities.Player.Dash", "Tag for dash ability")
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Run, "GTags.Abilities.Player.Run", "Tag for run ability")
 
-	// States
-	GameplayTags.State_Running = Manager.AddNativeGameplayTag(TEXT("State.Running"));
-	GameplayTags.State_Dashing = Manager.AddNativeGameplayTag(TEXT("State.Dashing"));
+		} // namespace Player
 
-	// Effects
-	GameplayTags.Effect_StaminaCost = Manager.AddNativeGameplayTag(TEXT("Effect.StaminaCost"));
-	GameplayTags.Effect_StaminaDrain = Manager.AddNativeGameplayTag(TEXT("Effect.StaminaDrain"));
-}
+		namespace State
+		{
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Dashing, "GTags.Abilities.State.Dashing", "Tag for dashing state")
+			UE_DEFINE_GAMEPLAY_TAG_COMMENT(Running, "GTags.Abilities.State.Running", "Tag for running state")
+
+		} // namespace State
+	} // namespace Abilities
+
+	namespace Effect
+	{
+		UE_DEFINE_GAMEPLAY_TAG_COMMENT(StaminaCost, "GTags.Abilities.Effect.StaminaCost", "Tag for stamina cost effect")
+		UE_DEFINE_GAMEPLAY_TAG_COMMENT(StaminaDrain, "GTags.Abilities.Effect.StaminaDrain", "Tag for stamina drain effect")
+
+	} // namespace Effect
+} // namespace GTag

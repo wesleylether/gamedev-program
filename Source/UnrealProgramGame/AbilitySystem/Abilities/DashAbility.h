@@ -14,6 +14,7 @@ class UNREALPROGRAMGAME_API UDashAbility : public UGameplayAbility
 {
 	GENERATED_BODY()
 
+public:
 	UDashAbility();
 
 protected:

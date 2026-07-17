@@ -1,26 +1,32 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameplayTagContainer.h"
+#include "NativeGameplayTags.h"
 
-struct FGameplayTags
+namespace GTag
 {
-	static const FGameplayTags& Get() { return GameplayTags; }
+	UE_DECLARE_GAMEPLAY_TAG_EXTERN(None);
 
-	static void Initialize();
+	namespace Abilities
+	{
+		namespace Player
+		{
+			UE_DECLARE_GAMEPLAY_TAG_EXTERN(Dash);
+			UE_DECLARE_GAMEPLAY_TAG_EXTERN(Run);
+		} // namespace Player
 
-	// Abilities
-	FGameplayTag Ability_Run;
-	FGameplayTag Ability_Dash;
+		namespace State
+		{
+			UE_DECLARE_GAMEPLAY_TAG_EXTERN(Dashing);
+			UE_DECLARE_GAMEPLAY_TAG_EXTERN(Running);
+		} // namespace State
 
-	// States
-	FGameplayTag State_Running;
-	FGameplayTag State_Dashing;
+	} // namespace Abilities
 
-	// Effects
-	FGameplayTag Effect_StaminaCost;
-	FGameplayTag Effect_StaminaDrain;
+	namespace Effect
+	{
+		UE_DECLARE_GAMEPLAY_TAG_EXTERN(StaminaCost);
+		UE_DECLARE_GAMEPLAY_TAG_EXTERN(StaminaDrain);
+	} // namespace Effect
 
-private:
-	static FGameplayTags GameplayTags;
-};
+} // namespace GTags

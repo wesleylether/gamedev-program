@@ -1,7 +1,9 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "UnrealProgramGameCharacter.h"
+#include "AbilitySystem/Abilities/DashAbility.h"
 #include "AbilitySystem/AttributeSets/PlayerAttributeSet.h"
+#include "AbilitySystem/FGameplayTags.h"
 #include "AbilitySystemComponent.h"
 #include "Animation/AnimInstance.h"
 #include "Camera/CameraComponent.h"
@@ -60,6 +62,9 @@ AUnrealProgramGameCharacter::AUnrealProgramGameCharacter()
 	AttributeSet = CreateDefaultSubobject<UPlayerAttributeSet>(TEXT("AttributeSet"));
 
 	PrimaryActorTick.bCanEverTick = true;
+
+	// Abilities
+	DefaultAbilities.Add(UDashAbility::StaticClass());
 }
 
 void AUnrealProgramGameCharacter::Tick(float DeltaTime)
@@ -127,7 +132,7 @@ void AUnrealProgramGameCharacter::SetupPlayerInputComponent(UInputComponent* Pla
 		EnhancedInputComponent->BindAction(CrouchAction, ETriggerEvent::Triggered, this, &AUnrealProgramGameCharacter::CrouchInput);
 
 		// Jumping & Dashing
-		EnhancedInputComponent->BindAction(DashedAction, ETriggerEvent::Started, this, &AUnrealProgramGameCharacter::DashedStarted);
+		// EnhancedInputComponent->BindAction(DashedAction, ETriggerEvent::Started, this, &AUnrealProgramGameCharacter::DashedStarted);
 		EnhancedInputComponent->BindAction(DashedAction, ETriggerEvent::Triggered, this, &AUnrealProgramGameCharacter::DashedTriggered);
 		EnhancedInputComponent->BindAction(ChargedJumpAction, ETriggerEvent::Triggered, this, &AUnrealProgramGameCharacter::DoChargedJumpStart);
 		EnhancedInputComponent->BindAction(ChargedJumpAction, ETriggerEvent::Completed, this, &AUnrealProgramGameCharacter::DoChargedJumpEnd);
@@ -285,60 +290,52 @@ void AUnrealProgramGameCharacter::CrouchInput(const FInputActionValue& Value)
 }
 
 // Jumping & Dashing
-void AUnrealProgramGameCharacter::DashedStarted(const FInputActionValue& Values)
-{
-	FVector2D CurrentInput = Values.Get<FVector2D>();
-
-	if (!CurrentInput.IsNearlyZero())
-	{
-		PreviousDashInput2D = LastDashInput2D;
-		LastDashInput2D = CurrentInput;
-	}
-}
+// void AUnrealProgramGameCharacter::DashedStarted(const FInputActionValue& Values)
+// {
+// 	FVector2D CurrentInput = Values.Get<FVector2D>();
+//
+// 	if (!CurrentInput.IsNearlyZero())
+// 	{
+// 		PreviousDashInput2D = LastDashInput2D;
+// 		LastDashInput2D = CurrentInput;
+// 	}
+// }
 
 void AUnrealProgramGameCharacter::DashedTriggered(const FInputActionValue& Values)
 {
-	if (GetWorldTimerManager().IsTimerActive(DashTimerHandle))
+	if (AbilitySystemComponent)
 	{
-		return;
-	}
+		FGameplayTag DashTag = GTag::Abilities::Player::Dash;
+		UE_LOG(LogUnrealProgramGame, Log, TEXT("DashedTriggered called. Tag: %s"), *DashTag.ToString());
 
-	if (!AttributeSet || AttributeSet->GetStamina() < DashStaminaCost)
-	{
-		return;
-	}
-
-	if (!LastDashInput2D.Equals(PreviousDashInput2D, 0.1f))
-	{
-		LastDashInput2D = FVector2D::ZeroVector;
-		PreviousDashInput2D = FVector2D::ZeroVector;
-		return;
-	}
-
-	if (!LastDashInput2D.IsNearlyZero())
-	{
-		FVector DashDirection = GetActorForwardVector() * LastDashInput2D.Y + GetActorRightVector() * LastDashInput2D.X;
-		DashDirection.Normalize();
-
-		LaunchCharacter(DashDirection * DashSpeed, true, true);
-
-		AttributeSet->SetStamina(AttributeSet->GetStamina() - DashStaminaCost);
-
-		if (DashSound)
+		// Debug: check all activatable abilities
+		for (const FGameplayAbilitySpec& Spec : AbilitySystemComponent->GetActivatableAbilities())
 		{
-			UGameplayStatics::PlaySoundAtLocation(this, DashSound, GetActorLocation());
+			UE_LOG(LogUnrealProgramGame, Log, TEXT("Found Ability: %s"), *Spec.Ability->GetName());
+			for (FGameplayTag Tag : Spec.Ability->GetAssetTags())
+			{
+				UE_LOG(LogUnrealProgramGame, Log, TEXT(" - Ability Tag: %s"), *Tag.ToString());
+			}
 		}
 
-		GetWorldTimerManager().SetTimer(DashTimerHandle, this, &AUnrealProgramGameCharacter::StopDash, DashTiming, false);
+		FGameplayTagContainer TagContainer;
+		TagContainer.AddTag(DashTag);
 
-		LastDashInput2D = FVector2D::ZeroVector;
-		PreviousDashInput2D = FVector2D::ZeroVector;
+		bool bSuccess = AbilitySystemComponent->TryActivateAbilitiesByTag(TagContainer);
+		UE_LOG(LogUnrealProgramGame, Log, TEXT("TryActivateAbilitiesByTag result: %s"), bSuccess ? TEXT("Success") : TEXT("Failed"));
 	}
 }
 
 void AUnrealProgramGameCharacter::StopDash()
 {
-	GetCharacterMovement()->StopMovementImmediately();
+	if (AbilitySystemComponent)
+	{
+		FGameplayTagContainer TagContainer;
+		TagContainer.AddTag(GTag::Abilities::Player::Dash);
+		AbilitySystemComponent->CancelAbilities(&TagContainer);
+	}
+
+	// GetCharacterMovement()->StopMovementImmediately();
 }
 
 void AUnrealProgramGameCharacter::DoChargedJumpStart(const FInputActionValue& Value)

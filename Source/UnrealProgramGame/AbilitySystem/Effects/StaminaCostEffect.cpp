@@ -14,7 +14,7 @@ UStaminaCostEffect::UStaminaCostEffect()
 	ModifierInfo.ModifierOp = EGameplayModOp::Additive;
 
 	FSetByCallerFloat SetByCallerParam;
-	SetByCallerParam.DataTag = FGameplayTags::Get().Effect_StaminaCost;
+	SetByCallerParam.DataTag = GTag::Effect::StaminaCost;
 
 	ModifierInfo.ModifierMagnitude = FGameplayEffectModifierMagnitude(SetByCallerParam);
 

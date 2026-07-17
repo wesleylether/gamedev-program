@@ -11,13 +11,10 @@ UDashAbility::UDashAbility()
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
 	DashForce = 2000.0f;
 
-	const FGameplayTags& Tag = FGameplayTags::Get();
-	AbilityTags.AddTag(Tag.Ability_Dash);
-	ActivationOwnedTags.AddTag(Tag.State_Dashing);
-
-	CancelAbilitiesWithTag.AddTag(Tag.Ability_Run);
-
-	ActivationBlockedTags.AddTag(Tag.State_Dashing);
+	SetAssetTags(FGameplayTagContainer(GTag::Abilities::Player::Dash));
+	ActivationOwnedTags.AddTag(GTag::Abilities::State::Dashing);
+	CancelAbilitiesWithTag.AddTag(GTag::Abilities::Player::Run);
+	ActivationBlockedTags.AddTag(GTag::Abilities::State::Dashing);
 
 	CostGameplayEffectClass = UStaminaCostEffect::StaticClass();
 }
@@ -36,7 +33,7 @@ void UDashAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, cons
 
 		if (SpecHandle.IsValid())
 		{
-			SpecHandle.Data.Get()->SetSetByCallerMagnitude(FGameplayTags::Get().Effect_StaminaCost, -20.0f);
+			SpecHandle.Data.Get()->SetSetByCallerMagnitude(GTag::Effect::StaminaCost, -20.0f);
 
 			(void)ApplyGameplayEffectSpecToOwner(Handle, ActorInfo, ActivationInfo, SpecHandle);
 		}

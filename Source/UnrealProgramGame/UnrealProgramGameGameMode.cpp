@@ -4,5 +4,4 @@
 
 AUnrealProgramGameGameMode::AUnrealProgramGameGameMode()
 {
-	// stub
 }
