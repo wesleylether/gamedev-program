@@ -59,6 +59,9 @@ public:
 	/** Returns first person camera component **/
 	UCameraComponent* GetFirstPersonCameraComponent() const { return FirstPersonCameraComponent; }
 
+	UFUNCTION(BlueprintCallable, Category = "Character|Movement")
+	FVector2D GetLastDashInput2D() const { return LastDashInput2D; }
+
 protected:
 	// -------------------------------------------------------------------------
 	// Engine Overrides
@@ -177,9 +180,7 @@ protected:
 	void CrouchInput(const FInputActionValue& Value);
 
 	// Jumping & Dashing
-	void DashedStarted(const FInputActionValue& Values);
 	void DashedTriggered(const FInputActionValue& Values);
-	void StopDash();
 	void DoChargedJumpStart(const FInputActionValue& Value);
 	void DoChargedJumpEnd(const FInputActionValue& Value);
 

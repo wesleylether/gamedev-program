@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "Abilities/GameplayAbility.h"
+#include "AbilitySystem/Abilities/Base/BaseStaminaCostAbility.h"
 #include "CoreMinimal.h"
 #include "DashAbility.generated.h"
 
@@ -10,7 +10,7 @@
  *
  */
 UCLASS()
-class UNREALPROGRAMGAME_API UDashAbility : public UGameplayAbility
+class UNREALPROGRAMGAME_API UDashAbility : public UBaseStaminaCostAbility
 {
 	GENERATED_BODY()
 

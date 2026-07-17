@@ -4,12 +4,13 @@
 
 #include "AbilitySystem/Effects/StaminaCostEffect.h"
 #include "AbilitySystem/FGameplayTags.h"
-#include "GameFramework/Character.h"
+#include "UnrealProgramGameCharacter.h"
 
 UDashAbility::UDashAbility()
 {
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
 	DashForce = 2000.0f;
+	StaminaCostAmount = 20.0f;
 
 	SetAssetTags(FGameplayTagContainer(GTag::Abilities::Player::Dash));
 	ActivationOwnedTags.AddTag(GTag::Abilities::State::Dashing);
@@ -27,21 +28,22 @@ void UDashAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, cons
 		return;
 	}
 
-	if (HasAuthorityOrPredictionKey(ActorInfo, &ActivationInfo))
+	if (AUnrealProgramGameCharacter* Character = Cast<AUnrealProgramGameCharacter>(ActorInfo->AvatarActor.Get()))
 	{
-		FGameplayEffectSpecHandle SpecHandle = MakeOutgoingGameplayEffectSpec(CostGameplayEffectClass, 1.0f);
+		FVector2D MoveInput = Character->GetLastDashInput2D();
+		FVector DashDirection;
 
-		if (SpecHandle.IsValid())
+		if (MoveInput.IsNearlyZero())
 		{
-			SpecHandle.Data.Get()->SetSetByCallerMagnitude(GTag::Effect::StaminaCost, -20.0f);
-
-			(void)ApplyGameplayEffectSpecToOwner(Handle, ActorInfo, ActivationInfo, SpecHandle);
+			DashDirection = Character->GetActorForwardVector();
 		}
-	}
+		else
+		{
+			// Calculate dash direction based on movement input (X = Right, Y = Forward)
+			DashDirection = Character->GetActorForwardVector() * MoveInput.Y + Character->GetActorRightVector() * MoveInput.X;
+			DashDirection.Normalize();
+		}
 
-	if (ACharacter* Character = Cast<ACharacter>(ActorInfo->AvatarActor.Get()))
-	{
-		FVector DashDirection = Character->GetActorForwardVector();
 		Character->LaunchCharacter(DashDirection * DashForce, true, true);
 	}
 

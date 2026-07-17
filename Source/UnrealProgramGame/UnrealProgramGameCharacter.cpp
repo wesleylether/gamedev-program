@@ -127,6 +127,8 @@ void AUnrealProgramGameCharacter::SetupPlayerInputComponent(UInputComponent* Pla
 	{
 		// Movement
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AUnrealProgramGameCharacter::MoveInput);
+		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Completed, this, &AUnrealProgramGameCharacter::MoveInput);
+		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Canceled, this, &AUnrealProgramGameCharacter::MoveInput);
 		EnhancedInputComponent->BindAction(WalkAction, ETriggerEvent::Triggered, this, &AUnrealProgramGameCharacter::WalkInputTriggered);
 		EnhancedInputComponent->BindAction(RunAction, ETriggerEvent::Triggered, this, &AUnrealProgramGameCharacter::RunInputTriggered);
 		EnhancedInputComponent->BindAction(CrouchAction, ETriggerEvent::Triggered, this, &AUnrealProgramGameCharacter::CrouchInput);
@@ -243,6 +245,7 @@ void AUnrealProgramGameCharacter::MoveInput(const FInputActionValue& Value)
 {
 	// get the Vector2D move axis
 	FVector2D MovementVector = Value.Get<FVector2D>();
+	LastDashInput2D = MovementVector;
 
 	// pass the axis values to the move input
 	DoMove(MovementVector.X, MovementVector.Y);
@@ -290,52 +293,12 @@ void AUnrealProgramGameCharacter::CrouchInput(const FInputActionValue& Value)
 }
 
 // Jumping & Dashing
-// void AUnrealProgramGameCharacter::DashedStarted(const FInputActionValue& Values)
-// {
-// 	FVector2D CurrentInput = Values.Get<FVector2D>();
-//
-// 	if (!CurrentInput.IsNearlyZero())
-// 	{
-// 		PreviousDashInput2D = LastDashInput2D;
-// 		LastDashInput2D = CurrentInput;
-// 	}
-// }
-
 void AUnrealProgramGameCharacter::DashedTriggered(const FInputActionValue& Values)
 {
 	if (AbilitySystemComponent)
 	{
-		FGameplayTag DashTag = GTag::Abilities::Player::Dash;
-		UE_LOG(LogUnrealProgramGame, Log, TEXT("DashedTriggered called. Tag: %s"), *DashTag.ToString());
-
-		// Debug: check all activatable abilities
-		for (const FGameplayAbilitySpec& Spec : AbilitySystemComponent->GetActivatableAbilities())
-		{
-			UE_LOG(LogUnrealProgramGame, Log, TEXT("Found Ability: %s"), *Spec.Ability->GetName());
-			for (FGameplayTag Tag : Spec.Ability->GetAssetTags())
-			{
-				UE_LOG(LogUnrealProgramGame, Log, TEXT(" - Ability Tag: %s"), *Tag.ToString());
-			}
-		}
-
-		FGameplayTagContainer TagContainer;
-		TagContainer.AddTag(DashTag);
-
-		bool bSuccess = AbilitySystemComponent->TryActivateAbilitiesByTag(TagContainer);
-		UE_LOG(LogUnrealProgramGame, Log, TEXT("TryActivateAbilitiesByTag result: %s"), bSuccess ? TEXT("Success") : TEXT("Failed"));
+		AbilitySystemComponent->TryActivateAbilitiesByTag(FGameplayTagContainer(GTag::Abilities::Player::Dash));
 	}
-}
-
-void AUnrealProgramGameCharacter::StopDash()
-{
-	if (AbilitySystemComponent)
-	{
-		FGameplayTagContainer TagContainer;
-		TagContainer.AddTag(GTag::Abilities::Player::Dash);
-		AbilitySystemComponent->CancelAbilities(&TagContainer);
-	}
-
-	// GetCharacterMovement()->StopMovementImmediately();
 }
 
 void AUnrealProgramGameCharacter::DoChargedJumpStart(const FInputActionValue& Value)
