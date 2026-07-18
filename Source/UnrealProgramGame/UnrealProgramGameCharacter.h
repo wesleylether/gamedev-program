@@ -59,6 +59,8 @@ public:
 	/** Returns first person camera component **/
 	UCameraComponent* GetFirstPersonCameraComponent() const { return FirstPersonCameraComponent; }
 
+	float GetMaxWalkSpeed() const { return MaxWalkSpeed; }
+
 	UFUNCTION(BlueprintCallable, Category = "Character|Movement")
 	FVector2D GetLastDashInput2D() const { return LastDashInput2D; }
 

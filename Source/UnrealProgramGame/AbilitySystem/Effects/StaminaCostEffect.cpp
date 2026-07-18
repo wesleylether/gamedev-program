@@ -7,16 +7,25 @@
 
 UStaminaCostEffect::UStaminaCostEffect()
 {
-	DurationPolicy = EGameplayEffectDurationType::Instant;
-
 	FGameplayModifierInfo ModifierInfo;
 	ModifierInfo.Attribute = UPlayerAttributeSet::GetStaminaAttribute();
 	ModifierInfo.ModifierOp = EGameplayModOp::Additive;
 
-	FSetByCallerFloat SetByCallerParam;
-	SetByCallerParam.DataTag = GTag::Effect::StaminaCost;
+	FSetByCallerFloat StaminaCost;
+	StaminaCost.DataTag = GTag::Effect::StaminaCost;
 
-	ModifierInfo.ModifierMagnitude = FGameplayEffectModifierMagnitude(SetByCallerParam);
+	ModifierInfo.ModifierMagnitude = FGameplayEffectModifierMagnitude(StaminaCost);
 
 	Modifiers.Add(ModifierInfo);
+}
+
+UStaminaDrainEffect::UStaminaDrainEffect()
+{
+	DurationPolicy = EGameplayEffectDurationType::Infinite;
+	Period = 0.1f;
+}
+
+UStaminaInstantEffect::UStaminaInstantEffect()
+{
+	DurationPolicy = EGameplayEffectDurationType::Instant;
 }

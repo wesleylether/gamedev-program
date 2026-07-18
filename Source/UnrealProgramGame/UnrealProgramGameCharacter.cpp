@@ -2,6 +2,7 @@
 
 #include "UnrealProgramGameCharacter.h"
 #include "AbilitySystem/Abilities/DashAbility.h"
+#include "AbilitySystem/Abilities/RunAbility.h"
 #include "AbilitySystem/AttributeSets/PlayerAttributeSet.h"
 #include "AbilitySystem/FGameplayTags.h"
 #include "AbilitySystemComponent.h"
@@ -65,6 +66,7 @@ AUnrealProgramGameCharacter::AUnrealProgramGameCharacter()
 
 	// Abilities
 	DefaultAbilities.Add(UDashAbility::StaticClass());
+	DefaultAbilities.Add(URunAbility::StaticClass());
 }
 
 void AUnrealProgramGameCharacter::Tick(float DeltaTime)
@@ -265,18 +267,17 @@ void AUnrealProgramGameCharacter::WalkInputTriggered(const FInputActionValue& Va
 
 void AUnrealProgramGameCharacter::RunInputTriggered(const FInputActionValue& Value)
 {
-	if (PlayerState == EPlayerState::Flying)
+	if (AbilitySystemComponent)
 	{
-		return;
-	}
-
-	if (Value.Get<bool>() && AttributeSet && AttributeSet->GetStamina() > 0.0f)
-	{
-		GetCharacterMovement()->MaxWalkSpeed = MaxRunSpeed;
-	}
-	else
-	{
-		GetCharacterMovement()->MaxWalkSpeed = MaxWalkSpeed;
+		if (Value.Get<bool>())
+		{
+			AbilitySystemComponent->TryActivateAbilitiesByTag(FGameplayTagContainer(GTag::Abilities::Run));
+		}
+		else
+		{
+			const FGameplayTagContainer RunTag(GTag::Abilities::Run);
+			AbilitySystemComponent->CancelAbilities(&RunTag);
+		}
 	}
 }
 
@@ -297,7 +298,7 @@ void AUnrealProgramGameCharacter::DashedTriggered(const FInputActionValue& Value
 {
 	if (AbilitySystemComponent)
 	{
-		AbilitySystemComponent->TryActivateAbilitiesByTag(FGameplayTagContainer(GTag::Abilities::Player::Dash));
+		AbilitySystemComponent->TryActivateAbilitiesByTag(FGameplayTagContainer(GTag::Abilities::Dash));
 	}
 }
 

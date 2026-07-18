@@ -28,4 +28,5 @@ public:
 	ATTRIBUTE_ACCESSORS(UPlayerAttributeSet, MaxStamina)
 
 	virtual void PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data) override;
+	virtual void PostAttributeChange(const FGameplayAttribute& Attribute, float OldValue, float NewValue) override;
 };

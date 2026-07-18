@@ -2,20 +2,21 @@
 
 #include "RunAbility.h"
 
-#include "AbilitySystem/Effects/StaminaDrainEffect.h"
+#include "AbilitySystem/Effects/StaminaCostEffect.h"
 #include "AbilitySystem/FGameplayTags.h"
 #include "AbilitySystemComponent.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "UnrealProgramGameCharacter.h"
 
 URunAbility::URunAbility()
 {
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
-	DefaultWalkSpeed = 600.0f;
-	SprintSpeedMultiplier = 1.6f;
+	SprintSpeedMultiplier = 1.8f;
+	StaminaCostAmount = 1.0f;
 
-	SetAssetTags(FGameplayTagContainer(GTag::Abilities::Player::Run));
-	ActivationOwnedTags.AddTag(GTag::Abilities::State::Running);
+	SetAssetTags(FGameplayTagContainer(GTag::Abilities::Run));
+	ActivationOwnedTags.AddTag(GTag::State::Running);
 
 	CostGameplayEffectClass = UStaminaDrainEffect::StaticClass();
 }
@@ -28,28 +29,17 @@ void URunAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const
 		return;
 	}
 
-	if (ACharacter* Character = Cast<ACharacter>(ActorInfo->AvatarActor.Get()); Character && Character->GetCharacterMovement())
+	if (AUnrealProgramGameCharacter* Character = Cast<AUnrealProgramGameCharacter>(ActorInfo->AvatarActor.Get()); Character && Character->GetCharacterMovement())
 	{
-		DefaultWalkSpeed = Character->GetCharacterMovement()->MaxWalkSpeed;
-		Character->GetCharacterMovement()->MaxWalkSpeed = DefaultWalkSpeed * SprintSpeedMultiplier;
-	}
-
-	if (HasAuthorityOrPredictionKey(ActorInfo, &ActivationInfo))
-	{
-		FGameplayEffectSpecHandle SpecHandle = MakeOutgoingGameplayEffectSpec(CostGameplayEffectClass, 1.0f);
-
-		if (SpecHandle.IsValid())
-		{
-			ActiveCostEffectHandle = ApplyGameplayEffectSpecToOwner(Handle, ActorInfo, ActivationInfo, SpecHandle);
-		}
+		Character->GetCharacterMovement()->MaxWalkSpeed = Character->GetMaxWalkSpeed() * SprintSpeedMultiplier;
 	}
 }
 
 void URunAbility::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
 {
-	if (ACharacter* Character = Cast<ACharacter>(ActorInfo->AvatarActor.Get()); Character && Character->GetCharacterMovement())
+	if (AUnrealProgramGameCharacter* Character = Cast<AUnrealProgramGameCharacter>(ActorInfo->AvatarActor.Get()); Character && Character->GetCharacterMovement())
 	{
-		Character->GetCharacterMovement()->MaxWalkSpeed = DefaultWalkSpeed;
+		Character->GetCharacterMovement()->MaxWalkSpeed = Character->GetMaxWalkSpeed();
 	}
 
 	if (ActiveCostEffectHandle.IsValid() && ActorInfo->AbilitySystemComponent.IsValid())

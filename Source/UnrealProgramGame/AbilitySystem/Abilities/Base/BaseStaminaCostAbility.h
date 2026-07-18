@@ -24,4 +24,6 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Ability|Cost")
 	float StaminaCostAmount;
+
+	mutable FActiveGameplayEffectHandle ActiveCostEffectHandle;
 };

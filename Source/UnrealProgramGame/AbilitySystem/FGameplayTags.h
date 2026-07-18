@@ -9,24 +9,20 @@ namespace GTag
 
 	namespace Abilities
 	{
-		namespace Player
-		{
-			UE_DECLARE_GAMEPLAY_TAG_EXTERN(Dash);
-			UE_DECLARE_GAMEPLAY_TAG_EXTERN(Run);
-		} // namespace Player
-
-		namespace State
-		{
-			UE_DECLARE_GAMEPLAY_TAG_EXTERN(Dashing);
-			UE_DECLARE_GAMEPLAY_TAG_EXTERN(Running);
-		} // namespace State
-
+		UE_DECLARE_GAMEPLAY_TAG_EXTERN(Dash);
+		UE_DECLARE_GAMEPLAY_TAG_EXTERN(Run);
 	} // namespace Abilities
 
 	namespace Effect
 	{
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(StaminaCost);
-		UE_DECLARE_GAMEPLAY_TAG_EXTERN(StaminaDrain);
 	} // namespace Effect
 
-} // namespace GTags
+	namespace State
+	{
+		UE_DECLARE_GAMEPLAY_TAG_EXTERN(Dashing);
+		UE_DECLARE_GAMEPLAY_TAG_EXTERN(Running);
+		UE_DECLARE_GAMEPLAY_TAG_EXTERN(Exhausted);
+	} // namespace State
+
+} // namespace GTag

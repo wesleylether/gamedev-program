@@ -43,7 +43,7 @@ void UBaseStaminaCostAbility::ApplyCost(const FGameplayAbilitySpecHandle Handle,
 		if (SpecHandle.IsValid() && SpecHandle.Data.IsValid())
 		{
 			SpecHandle.Data->SetSetByCallerMagnitude(GTag::Effect::StaminaCost, -StaminaCostAmount);
-			(void)ApplyGameplayEffectSpecToOwner(Handle, ActorInfo, ActivationInfo, SpecHandle);
+			ActiveCostEffectHandle = ApplyGameplayEffectSpecToOwner(Handle, ActorInfo, ActivationInfo, SpecHandle);
 		}
 	}
 }

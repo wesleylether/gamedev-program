@@ -1,4 +1,5 @@
 #include "AbilitySystem/AttributeSets/PlayerAttributeSet.h"
+#include "AbilitySystem/FGameplayTags.h"
 #include "GameplayEffectExtension.h"
 
 UPlayerAttributeSet::UPlayerAttributeSet()
@@ -15,5 +16,33 @@ void UPlayerAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCall
 	if (CurrentAttribute == GetStaminaAttribute())
 	{
 		SetStamina(FMath::Clamp(GetStamina(), 0.0f, GetMaxStamina()));
+	}
+}
+
+void UPlayerAttributeSet::PostAttributeChange(const FGameplayAttribute& Attribute, float OldValue, float NewValue)
+{
+	Super::PostAttributeChange(Attribute, OldValue, NewValue);
+
+	if (Attribute == GetStaminaAttribute())
+	{
+		if (NewValue <= 0.0f)
+		{
+			if (UAbilitySystemComponent* ASC = GetOwningAbilitySystemComponent())
+			{
+				ASC->AddLooseGameplayTag(GTag::State::Exhausted);
+
+				FGameplayTagContainer AbilitiesToCancel;
+				AbilitiesToCancel.AddTag(GTag::Abilities::Run);
+				ASC->CancelAbilities(&AbilitiesToCancel);
+			}
+		}
+
+		if (NewValue >= GetMaxStamina())
+		{
+			if (UAbilitySystemComponent* ASC = GetOwningAbilitySystemComponent())
+			{
+				ASC->RemoveLooseGameplayTag(GTag::State::Exhausted);
+			}
+		}
 	}
 }
