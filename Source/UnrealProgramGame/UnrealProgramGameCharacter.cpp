@@ -1,9 +1,12 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "UnrealProgramGameCharacter.h"
+#include "AbilitySystem/Abilities/ChargedJumpAbility.h"
 #include "AbilitySystem/Abilities/DashAbility.h"
+#include "AbilitySystem/Abilities/FlyAbility.h"
 #include "AbilitySystem/Abilities/RunAbility.h"
 #include "AbilitySystem/AttributeSets/PlayerAttributeSet.h"
+#include "AbilitySystem/Effects/StaminaGainEffect.h"
 #include "AbilitySystem/FGameplayTags.h"
 #include "AbilitySystemComponent.h"
 #include "Animation/AnimInstance.h"
@@ -13,7 +16,6 @@
 #include "EnhancedInputComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "InputActionValue.h"
-#include "Kismet/GameplayStatics.h"
 #include "TimerManager.h"
 #include "UnrealProgramGame.h"
 #include "UnrealProgramGamePlayerController.h"
@@ -67,6 +69,11 @@ AUnrealProgramGameCharacter::AUnrealProgramGameCharacter()
 	// Abilities
 	DefaultAbilities.Add(UDashAbility::StaticClass());
 	DefaultAbilities.Add(URunAbility::StaticClass());
+	DefaultAbilities.Add(UFlyAbility::StaticClass());
+	DefaultAbilities.Add(UChargedJumpAbility::StaticClass());
+
+	// Effects
+	DefaultEffects.Add(UStaminaGainEffect::StaticClass());
 }
 
 void AUnrealProgramGameCharacter::Tick(float DeltaTime)
@@ -75,37 +82,7 @@ void AUnrealProgramGameCharacter::Tick(float DeltaTime)
 
 	if (AttributeSet)
 	{
-		float CurrentStamina = AttributeSet->GetStamina();
 		float MaxStamina = AttributeSet->GetMaxStamina();
-
-		// Handle Regeneration
-		if (CurrentStamina < MaxStamina)
-		{
-			AttributeSet->SetStamina(FMath::Min(CurrentStamina + StaminaRegenRate * DeltaTime, MaxStamina));
-		}
-
-		// Handle Run Consumption
-		if (GetCharacterMovement()->MaxWalkSpeed == MaxRunSpeed && GetVelocity().Size() > 0.0f)
-		{
-			if (CurrentStamina > 0.0f)
-			{
-				AttributeSet->SetStamina(FMath::Max(AttributeSet->GetStamina() - RunStaminaCost * DeltaTime, 0.0f));
-			}
-			else
-			{
-				// Out of stamina, stop running
-				GetCharacterMovement()->MaxWalkSpeed = MaxWalkSpeed;
-			}
-		}
-
-		// Depleted Message
-		if (AttributeSet->GetStamina() <= 0.0f)
-		{
-			if (GEngine)
-			{
-				GEngine->AddOnScreenDebugMessage(100, 0.1f, FColor::Red, TEXT("Stamina depleted"));
-			}
-		}
 
 		// Update UI
 		if (AUnrealProgramGamePlayerController* PC = Cast<AUnrealProgramGamePlayerController>(GetController()))
@@ -139,7 +116,6 @@ void AUnrealProgramGameCharacter::SetupPlayerInputComponent(UInputComponent* Pla
 		// EnhancedInputComponent->BindAction(DashedAction, ETriggerEvent::Started, this, &AUnrealProgramGameCharacter::DashedStarted);
 		EnhancedInputComponent->BindAction(DashedAction, ETriggerEvent::Triggered, this, &AUnrealProgramGameCharacter::DashedTriggered);
 		EnhancedInputComponent->BindAction(ChargedJumpAction, ETriggerEvent::Triggered, this, &AUnrealProgramGameCharacter::DoChargedJumpStart);
-		EnhancedInputComponent->BindAction(ChargedJumpAction, ETriggerEvent::Completed, this, &AUnrealProgramGameCharacter::DoChargedJumpEnd);
 
 		// Flying
 		EnhancedInputComponent->BindAction(FlyModeAction, ETriggerEvent::Triggered, this, &AUnrealProgramGameCharacter::FlyInput);
@@ -200,6 +176,7 @@ void AUnrealProgramGameCharacter::BeginPlay()
 	{
 		AbilitySystemComponent->InitAbilityActorInfo(this, this);
 		GiveAbilities();
+		GiveEffects();
 	}
 
 	DefaultCameraRelativeLocation = FirstPersonCameraComponent->GetRelativeLocation();
@@ -238,6 +215,27 @@ void AUnrealProgramGameCharacter::GiveAbilities()
 	}
 }
 
+void AUnrealProgramGameCharacter::GiveEffects()
+{
+	if (!HasAuthority() || !AbilitySystemComponent)
+		return;
+
+	FGameplayEffectContextHandle EffectContext = AbilitySystemComponent->MakeEffectContext();
+	EffectContext.AddSourceObject(this);
+
+	for (TSubclassOf<UGameplayEffect>& EffectClass : DefaultEffects)
+	{
+		if (EffectClass)
+		{
+			FGameplayEffectSpecHandle SpecHandle = AbilitySystemComponent->MakeOutgoingSpec(EffectClass, 1.0f, EffectContext);
+			if (SpecHandle.IsValid())
+			{
+				AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
+			}
+		}
+	}
+}
+
 // -------------------------------------------------------------------------
 // Input Handling Functions
 // -------------------------------------------------------------------------
@@ -267,22 +265,34 @@ void AUnrealProgramGameCharacter::WalkInputTriggered(const FInputActionValue& Va
 
 void AUnrealProgramGameCharacter::RunInputTriggered(const FInputActionValue& Value)
 {
-	if (AbilitySystemComponent)
+	if (!AbilitySystemComponent)
+		return;
+
+	if (Value.Get<bool>())
 	{
-		if (Value.Get<bool>())
-		{
-			AbilitySystemComponent->TryActivateAbilitiesByTag(FGameplayTagContainer(GTag::Abilities::Run));
-		}
-		else
-		{
-			const FGameplayTagContainer RunTag(GTag::Abilities::Run);
-			AbilitySystemComponent->CancelAbilities(&RunTag);
-		}
+		AbilitySystemComponent->TryActivateAbilitiesByTag(FGameplayTagContainer(GTag::Abilities::Run));
+	}
+	else
+	{
+		const FGameplayTagContainer RunTag(GTag::Abilities::Run);
+		AbilitySystemComponent->CancelAbilities(&RunTag);
 	}
 }
 
 void AUnrealProgramGameCharacter::CrouchInput(const FInputActionValue& Value)
 {
+	if (!AbilitySystemComponent)
+		return;
+
+	FGameplayTagContainer ActiveTags;
+	ActiveTags.AddTag(GTag::State::Running);
+	ActiveTags.AddTag(GTag::State::Jumping);
+	ActiveTags.AddTag(GTag::State::Flying);
+	if (AbilitySystemComponent->HasAnyMatchingGameplayTags(ActiveTags))
+	{
+		return;
+	}
+
 	if (Value.Get<bool>())
 	{
 		Crouch();
@@ -296,58 +306,37 @@ void AUnrealProgramGameCharacter::CrouchInput(const FInputActionValue& Value)
 // Jumping & Dashing
 void AUnrealProgramGameCharacter::DashedTriggered(const FInputActionValue& Values)
 {
-	if (AbilitySystemComponent)
-	{
-		AbilitySystemComponent->TryActivateAbilitiesByTag(FGameplayTagContainer(GTag::Abilities::Dash));
-	}
+	if (!AbilitySystemComponent)
+		return;
+
+	AbilitySystemComponent->TryActivateAbilitiesByTag(FGameplayTagContainer(GTag::Abilities::Dash));
 }
 
 void AUnrealProgramGameCharacter::DoChargedJumpStart(const FInputActionValue& Value)
 {
-	if (PlayerState == EPlayerState::Flying)
-	{
+	if (!AbilitySystemComponent)
 		return;
-	}
 
-	if (!AttributeSet || AttributeSet->GetStamina() < ChargedJumpStaminaCost)
-	{
-		return;
-	}
-
-	GetCharacterMovement()->JumpZVelocity = MaxChargedJumpVelocity;
-	Jump();
-
-	AttributeSet->SetStamina(AttributeSet->GetStamina() - ChargedJumpStaminaCost);
-
-	if (ChargedJumpSound)
-	{
-		UGameplayStatics::PlaySoundAtLocation(this, ChargedJumpSound, GetActorLocation());
-	}
-}
-
-void AUnrealProgramGameCharacter::DoChargedJumpEnd(const FInputActionValue& Value)
-{
-	if (PlayerState == EPlayerState::Flying)
-	{
-		return;
-	}
-
-	GetCharacterMovement()->JumpZVelocity = MaxJumpVelocity;
-	StopJumping();
+	AbilitySystemComponent->TryActivateAbilitiesByTag(FGameplayTagContainer(GTag::Abilities::ChargedJump));
 }
 
 // Flying
 void AUnrealProgramGameCharacter::FlyInput()
 {
-	if (PlayerState == EPlayerState::Flying)
+	if (!AbilitySystemComponent)
+		return;
+
+	FGameplayTagContainer ActiveTags;
+	ActiveTags.AddTag(GTag::State::Flying);
+	if (!AbilitySystemComponent->HasAnyMatchingGameplayTags(ActiveTags))
 	{
-		PlayerState = EPlayerState::Walking;
-		GetCharacterMovement()->SetMovementMode(MOVE_Walking);
+		AbilitySystemComponent->TryActivateAbilitiesByTag(FGameplayTagContainer(GTag::Abilities::Fly));
 	}
 	else
 	{
-		PlayerState = EPlayerState::Flying;
-		GetCharacterMovement()->SetMovementMode(MOVE_Flying);
+		FGameplayTagContainer CancelTags;
+		CancelTags.AddTag(GTag::Abilities::Fly);
+		AbilitySystemComponent->CancelAbilities(&CancelTags);
 	}
 }
 

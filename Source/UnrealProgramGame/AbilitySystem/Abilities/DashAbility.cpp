@@ -14,14 +14,21 @@ UDashAbility::UDashAbility()
 
 	SetAssetTags(FGameplayTagContainer(GTag::Abilities::Dash));
 	ActivationOwnedTags.AddTag(GTag::State::Dashing);
+
 	CancelAbilitiesWithTag.AddTag(GTag::Abilities::Run);
+
+	ActivationBlockedTags.AddTag(GTag::State::Flying);
+	ActivationBlockedTags.AddTag(GTag::State::Jumping);
 	ActivationBlockedTags.AddTag(GTag::State::Dashing);
+	ActivationBlockedTags.AddTag(GTag::State::Exhausted);
 
 	CostGameplayEffectClass = UStaminaInstantEffect::StaticClass();
 }
 
 void UDashAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
+	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
+
 	if (!CommitAbility(Handle, ActorInfo, ActivationInfo))
 	{
 		EndAbility(Handle, ActorInfo, ActivationInfo, true, true);

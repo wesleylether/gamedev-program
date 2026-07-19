@@ -12,6 +12,7 @@
 
 // Forward Declarations
 class UGameplayAbility;
+class UGameplayEffect;
 class UPlayerAttributeSet;
 class UInputComponent;
 class USkeletalMeshComponent;
@@ -60,9 +61,12 @@ public:
 	UCameraComponent* GetFirstPersonCameraComponent() const { return FirstPersonCameraComponent; }
 
 	float GetMaxWalkSpeed() const { return MaxWalkSpeed; }
+	float GetMaxJumpVelocity() const { return MaxJumpVelocity; }
 
 	UFUNCTION(BlueprintCallable, Category = "Character|Movement")
 	FVector2D GetLastDashInput2D() const { return LastDashInput2D; }
+
+	USoundBase* GetChargedJumpSound() const { return ChargedJumpSound; }
 
 protected:
 	// -------------------------------------------------------------------------
@@ -94,8 +98,11 @@ protected:
 	// -------------------------------------------------------------------------
 	UPROPERTY(EditAnywhere, Category = "GAS")
 	TArray<TSubclassOf<UGameplayAbility>> DefaultAbilities;
+	UPROPERTY(EditAnywhere, Category = "GAS")
+	TArray<TSubclassOf<UGameplayEffect>> DefaultEffects;
 
 	void GiveAbilities();
+	void GiveEffects();
 
 	// -------------------------------------------------------------------------
 	// Input Actions (Properties)
@@ -158,13 +165,7 @@ protected:
 	float CameraInterpSpeed = 10.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stamina")
-	float RunStaminaCost = 5.0f;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stamina")
 	float ChargedJumpStaminaCost = 20.0f;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stamina")
-	float DashStaminaCost = 15.0f;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stamina")
-	float StaminaRegenRate = 1.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Audio")
 	USoundBase* DashSound;
@@ -184,7 +185,6 @@ protected:
 	// Jumping & Dashing
 	void DashedTriggered(const FInputActionValue& Values);
 	void DoChargedJumpStart(const FInputActionValue& Value);
-	void DoChargedJumpEnd(const FInputActionValue& Value);
 
 	// Flying
 	void FlyInput();

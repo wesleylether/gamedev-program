@@ -11,6 +11,8 @@ namespace GTag
 	{
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(Dash);
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(Run);
+		UE_DECLARE_GAMEPLAY_TAG_EXTERN(Fly);
+		UE_DECLARE_GAMEPLAY_TAG_EXTERN(ChargedJump);
 	} // namespace Abilities
 
 	namespace Effect
@@ -22,6 +24,8 @@ namespace GTag
 	{
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(Dashing);
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(Running);
+		UE_DECLARE_GAMEPLAY_TAG_EXTERN(Flying);
+		UE_DECLARE_GAMEPLAY_TAG_EXTERN(Jumping);
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(Exhausted);
 	} // namespace State
 

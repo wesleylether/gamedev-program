@@ -33,6 +33,7 @@ void UPlayerAttributeSet::PostAttributeChange(const FGameplayAttribute& Attribut
 
 				FGameplayTagContainer AbilitiesToCancel;
 				AbilitiesToCancel.AddTag(GTag::Abilities::Run);
+				AbilitiesToCancel.AddTag(GTag::Abilities::Fly);
 				ASC->CancelAbilities(&AbilitiesToCancel);
 			}
 		}
@@ -41,7 +42,10 @@ void UPlayerAttributeSet::PostAttributeChange(const FGameplayAttribute& Attribut
 		{
 			if (UAbilitySystemComponent* ASC = GetOwningAbilitySystemComponent())
 			{
-				ASC->RemoveLooseGameplayTag(GTag::State::Exhausted);
+				if (ASC->HasMatchingGameplayTag(GTag::State::Exhausted))
+				{
+					ASC->RemoveLooseGameplayTag(GTag::State::Exhausted);
+				}
 			}
 		}
 	}
