@@ -5,7 +5,7 @@
 ADirectionalMovement::ADirectionalMovement()
 {
 	ArrowComponent = CreateDefaultSubobject<UArrowComponent>(TEXT("ArrowComponent"));
-	ArrowComponent->SetupAttachment(RootComponent);
+	ArrowComponent->SetupAttachment(RootComp);
 }
 
 void ADirectionalMovement::BeginPlay()
