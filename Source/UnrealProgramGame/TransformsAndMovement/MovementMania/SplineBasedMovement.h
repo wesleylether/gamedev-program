@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Base/BaseMovementActor.h"
 #include "CoreMinimal.h"
+#include "TransformsAndMovement/Base/BaseMovementActor.h"
 
 #include "SplineBasedMovement.generated.h"
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Base/BaseMovementActor.h"
+#include "TransformsAndMovement/Base/BaseMovementActor.h"
 #include "CoreMinimal.h"
 
 #include "FollowTheLeaderMovement.generated.h"
