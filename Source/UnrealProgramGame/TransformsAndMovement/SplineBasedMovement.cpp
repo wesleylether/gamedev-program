@@ -11,7 +11,7 @@ void ASplineBasedMovement::BeginPlay()
 {
 	Super::BeginPlay();
 
-	MovementSpeed = 300.0f;
+	MovementSpeed = 200.0f;
 
 	if (SplineActor)
 	{
