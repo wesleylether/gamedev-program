@@ -27,6 +27,8 @@ namespace GTag
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(Flying);
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(Jumping);
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(Exhausted);
+
+		UE_DECLARE_GAMEPLAY_TAG_EXTERN(InMud);
 	} // namespace State
 
 } // namespace GTag

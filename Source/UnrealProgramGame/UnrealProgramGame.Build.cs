@@ -20,6 +20,7 @@ public class UnrealProgramGame : ModuleRules
 			"UMG",
 			"Slate",
 			"MetasoundEngine",
+			"Niagara",
 			"GameplayAbilities",
 			"GameplayTags",
 			"GameplayTasks"
