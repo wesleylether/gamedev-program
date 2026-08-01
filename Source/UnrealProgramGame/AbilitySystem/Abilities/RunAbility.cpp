@@ -21,6 +21,7 @@ URunAbility::URunAbility()
 	ActivationBlockedTags.AddTag(GTag::State::Flying);
 	ActivationBlockedTags.AddTag(GTag::State::Jumping);
 	ActivationBlockedTags.AddTag(GTag::State::Exhausted);
+	ActivationBlockedTags.AddTag(GTag::State::InMud);
 
 	CostGameplayEffectClass = UStaminaDrainEffect::StaticClass();
 }

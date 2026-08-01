@@ -27,6 +27,7 @@ namespace GTag
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(Flying, "GTags.State.Flying", "Tag for flying state")
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(Jumping, "GTags.State.Jumping", "Tag for jumping state")
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(Exhausted, "GTags.State.Exhausted", "Tag for exhausted state")
+		UE_DEFINE_GAMEPLAY_TAG_COMMENT(InMud, "GTags.State.InMud", "Tag for in mud state")
 
 	} // namespace State
 } // namespace GTag

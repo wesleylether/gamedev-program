@@ -74,6 +74,9 @@ AUnrealProgramGameCharacter::AUnrealProgramGameCharacter()
 
 	// Effects
 	DefaultEffects.Add(UStaminaGainEffect::StaticClass());
+
+	// Tags
+	Tags.Add(FName("Player"));
 }
 
 void AUnrealProgramGameCharacter::Tick(float DeltaTime)

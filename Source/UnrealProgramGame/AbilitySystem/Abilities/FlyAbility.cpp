@@ -21,6 +21,7 @@ UFlyAbility::UFlyAbility()
 	ActivationBlockedTags.AddTag(GTag::State::Jumping);
 	ActivationBlockedTags.AddTag(GTag::State::Dashing);
 	ActivationBlockedTags.AddTag(GTag::State::Exhausted);
+	ActivationBlockedTags.AddTag(GTag::State::InMud);
 
 	CostGameplayEffectClass = UStaminaDrainEffect::StaticClass();
 }
