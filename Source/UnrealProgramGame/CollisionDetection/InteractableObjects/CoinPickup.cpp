@@ -65,7 +65,6 @@ void ACoinPickup::HandleSphereComponentBeginOverlap(UPrimitiveComponent* Overlap
 
 	bIsPickupInProgress = true;
 	PickupAnimationElapsedTime = 0.0f;
-	InitialActorLocation = GetActorLocation();
 
 	if (PickupSound)
 	{

@@ -47,3 +47,11 @@ When generating or modifying `.h` files, strictly follow this structure:
     - **`AbilitySystem/AttributeSets/`:** Place all `UAttributeSet` subclasses here.
     - **`AbilitySystem/Effects/`:** Place all C++ `UGameplayEffect` subclasses and execution calculations here.
 - Always ensure that Abilities, Attribute Sets, and Effects include the correct base GAS headers (e.g., `AbilitySystemComponent.h`, `GameplayEffect.h`).
+
+# 8. Code Style & Patterns
+- **Early Return Pattern:** Always use the "Early return" pattern in `.cpp` files to enhance readability and maintainability by reducing nested blocks.
+```cpp
+AUnrealProgramGameCharacter* Charactor = Cast<AUnrealProgramGameCharacter>(OtherActor);
+if (!Charactor)
+	return;
+```

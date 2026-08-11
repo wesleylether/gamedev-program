@@ -29,7 +29,7 @@ protected:
 	TObjectPtr<USoundBase> ExplosionSound;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float EruptionStrength = 5000.0f;
+	float EruptionStrength = 2000.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float MinSeconds = 2.0f;
