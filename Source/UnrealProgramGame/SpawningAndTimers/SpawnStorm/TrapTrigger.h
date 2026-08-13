@@ -1,8 +1,8 @@
 
 #pragma once
 
+#include "AbstractClasses/BaseMeshActor.h"
 #include "CoreMinimal.h"
-#include "GameFramework/Actor.h"
 
 #include "TrapTrigger.generated.h"
 
@@ -11,7 +11,7 @@ class ABaseSpawnObject;
 class UBoxComponent;
 
 UCLASS()
-class UNREALPROGRAMGAME_API ATrapTrigger : public AActor
+class UNREALPROGRAMGAME_API ATrapTrigger : public ABaseMeshActor
 {
 	GENERATED_BODY()
 
@@ -20,12 +20,6 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	TObjectPtr<USceneComponent> SceneRoot;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TObjectPtr<UStaticMeshComponent> TrapMesh;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TObjectPtr<UBoxComponent> TrapBox;

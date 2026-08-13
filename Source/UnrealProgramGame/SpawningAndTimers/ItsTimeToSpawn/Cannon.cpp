@@ -95,7 +95,7 @@ void ACannon::OnProjectileSpawnTimer()
 	AActor* SpawnedActor = GetWorld()->SpawnActor(BulletToSpawn, &SpawnLocation, &SpawnRotation, Params);
 	if (!SpawnedActor)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("%s: Failed to spawn bullet actor!"), *GetName());
+		Log(FString::Printf(TEXT("%s: Failed to spawn bullet actor!"), *GetName()));
 		return;
 	}
 

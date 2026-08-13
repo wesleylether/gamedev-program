@@ -26,7 +26,7 @@ public class UnrealProgramGame : ModuleRules
 			"GameplayTasks"
 		});
 
-		PrivateDependencyModuleNames.AddRange(new string[] { });
+		PrivateDependencyModuleNames.AddRange(new string[] { "OpenSubdiv" });
 
 		PublicIncludePaths.AddRange(new string[] {
 			"UnrealProgramGame",

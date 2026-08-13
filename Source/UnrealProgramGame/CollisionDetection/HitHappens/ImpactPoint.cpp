@@ -1,18 +1,13 @@
 #include "ImpactPoint.h"
 
-AImpactPoint::AImpactPoint()
-{
-	PrimaryActorTick.bCanEverTick = false;
-}
-
 void AImpactPoint::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (!StaticMesh)
+	if (!Mesh)
 		return;
 
-	StaticMesh->OnComponentHit.AddDynamic(this, &AImpactPoint::OnHit);
+	Mesh->OnComponentHit.AddDynamic(this, &AImpactPoint::OnHit);
 }
 
 void AImpactPoint::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)

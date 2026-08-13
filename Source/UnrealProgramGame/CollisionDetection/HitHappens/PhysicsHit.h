@@ -1,7 +1,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "TransformsAndMovement/Base/BaseMovementActor.h"
+#include "AbstractClasses/BaseMovementActor.h"
+
 
 #include "PhysicsHit.generated.h"
 

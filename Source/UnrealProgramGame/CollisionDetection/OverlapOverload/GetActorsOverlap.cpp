@@ -4,6 +4,7 @@
 
 #include "Components/BoxComponent.h"
 #include "Engine/Engine.h"
+#include "Enum/EScreenMessageKeys.h"
 
 AGetActorsOverlap::AGetActorsOverlap()
 {
@@ -32,8 +33,7 @@ void AGetActorsOverlap::Tick(float DeltaSeconds)
 
 	if (!ActorNames.IsEmpty())
 	{
-		GEngine->AddOnScreenDebugMessage(5, DeltaSeconds, FColor::Orange,
-			FString::Printf(TEXT("Overlapped Actors: %s"), *ActorNames));
+		Message(FString::Printf(TEXT("Overlapped Actors: %s"), *ActorNames), static_cast<int32>(EScreenMessageKey::Overlap_General), DeltaSeconds, FColor::Orange);
 	}
 }
 

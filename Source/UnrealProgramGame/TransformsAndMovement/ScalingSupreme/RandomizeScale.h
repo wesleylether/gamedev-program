@@ -1,8 +1,8 @@
 #pragma once
 
+#include "AbstractClasses/BaseMovementActor.h"
 #include "CoreMinimal.h"
 #include "TimerManager.h"
-#include "TransformsAndMovement/Base/BaseMovementActor.h"
 
 #include "RandomizeScale.generated.h"
 

@@ -1,17 +1,14 @@
 #pragma once
 
+#include "AbstractClasses/BaseMeshActor.h"
 #include "CoreMinimal.h"
-#include "TransformsAndMovement/Base/BaseMovementActor.h"
 
 #include "LooperTimer.generated.h"
 
 UCLASS()
-class UNREALPROGRAMGAME_API ALooperTimer : public ABaseMovementActor
+class UNREALPROGRAMGAME_API ALooperTimer : public ABaseMeshActor
 {
 	GENERATED_BODY()
-
-public:
-	ALooperTimer();
 
 protected:
 	virtual void BeginPlay() override;

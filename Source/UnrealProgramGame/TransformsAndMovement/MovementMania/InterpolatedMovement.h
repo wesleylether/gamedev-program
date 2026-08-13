@@ -1,7 +1,7 @@
-
 #pragma once
 
-#include "TransformsAndMovement/Base/BaseMovementActor.h"
+#include "AbstractClasses/BaseMovementActor.h"
+
 #include "CoreMinimal.h"
 
 #include "InterpolatedMovement.generated.h"
@@ -15,7 +15,7 @@ public:
 	AInterpolatedMovement();
 
 	virtual void Tick(float DeltaTime) override;
-	
+
 protected:
 	virtual void BeginPlay() override;
 

@@ -1,21 +1,12 @@
 #include "BreakableDoor.h"
 
-#include "AbilitySystem/FGameplayTags.h"
-#include "AbilitySystemComponent.h"
-#include "Components/BoxComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "UnrealProgramGameCharacter.h"
 
 ABreakableDoor::ABreakableDoor()
 {
-	SceneRootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("SceneRootComponent"));
-	SetRootComponent(SceneRootComponent);
-
-	StaticMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMeshComponent"));
-	StaticMeshComponent->SetupAttachment(SceneRootComponent);
-
 	DoorMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("DoorMeshComponent"));
-	DoorMeshComponent->SetupAttachment(SceneRootComponent);
+	DoorMeshComponent->SetupAttachment(Mesh);
 
 	PrimaryActorTick.bCanEverTick = false;
 }
@@ -46,7 +37,7 @@ void ABreakableDoor::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor
 
 			if (ImpactSpeed < BreakLimit)
 			{
-				UE_LOG(LogTemp, Warning, TEXT("Not dashing or impact speed too low"));
+				Log(FString::Printf(TEXT("Not dashing or impact speed too low")));
 				return;
 			}
 

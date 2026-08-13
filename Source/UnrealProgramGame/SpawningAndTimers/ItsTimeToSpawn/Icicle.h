@@ -11,8 +11,6 @@ class UNREALPROGRAMGAME_API AIcicle : public ABaseMeshActor
 	GENERATED_BODY()
 
 public:
-	AIcicle();
-
 	void TurnPhysicsOn();
 
 protected:

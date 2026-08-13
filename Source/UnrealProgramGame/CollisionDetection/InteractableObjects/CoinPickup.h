@@ -1,7 +1,7 @@
 #pragma once
 
+#include "AbstractClasses/BaseActor.h"
 #include "CoreMinimal.h"
-#include "GameFramework/Actor.h"
 
 #include "CoinPickup.generated.h"
 
@@ -12,18 +12,17 @@ class USphereComponent;
 class UStaticMeshComponent;
 
 UCLASS()
-class UNREALPROGRAMGAME_API ACoinPickup : public AActor
+class UNREALPROGRAMGAME_API ACoinPickup : public ABaseActor
 {
 	GENERATED_BODY()
 
 public:
 	ACoinPickup();
-	virtual void BeginPlay() override;
+
 	virtual void Tick(float DeltaTime) override;
 
 protected:
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Coin|Components")
-	TObjectPtr<USceneComponent> RootSceneComponent;
+	virtual void BeginPlay() override;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Coin|Components")
 	TObjectPtr<USphereComponent> SphereComponent;

@@ -4,19 +4,14 @@
 
 ALayeredOverlap::ALayeredOverlap()
 {
-	PrimaryActorTick.bCanEverTick = false;
-
-	RootComp = CreateDefaultSubobject<USceneComponent>(TEXT("RootComp"));
-	SetRootComponent(RootComp);
-
 	InnerSphereComponent = CreateDefaultSubobject<USphereComponent>(TEXT("InnerSphereComponent"));
-	InnerSphereComponent->SetupAttachment(RootComp);
+	InnerSphereComponent->SetupAttachment(GetRootComponent());
 	InnerSphereComponent->SetLineThickness(3.0f);
 	InnerSphereComponent->SetSphereRadius(100.0f);
 	InnerSphereComponent->SetHiddenInGame(false);
 
 	OuterSphereComponent = CreateDefaultSubobject<USphereComponent>(TEXT("OuterSphereComponent"));
-	OuterSphereComponent->SetupAttachment(RootComp);
+	OuterSphereComponent->SetupAttachment(GetRootComponent());
 	OuterSphereComponent->SetLineThickness(3.0f);
 	OuterSphereComponent->SetSphereRadius(500.0f);
 	OuterSphereComponent->SetHiddenInGame(false);
@@ -40,11 +35,11 @@ void ALayeredOverlap::HandleSphereBeginOverlap(UPrimitiveComponent* OverlappedCo
 {
 	if (OverlappedComponent == OuterSphereComponent)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, TEXT("You are getting close!"));
+		Message(TEXT("You are getting close!"), -1, 5.0f, FColor::Yellow);
 	}
 	else if (OverlappedComponent == InnerSphereComponent)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("You are right next to me!"));
+		Message(TEXT("You are right next to me!"), -1, 5.0f, FColor::Red);
 	}
 }
 
@@ -52,10 +47,10 @@ void ALayeredOverlap::HandleSphereEndOverlap(UPrimitiveComponent* OverlappedComp
 {
 	if (OverlappedComponent == InnerSphereComponent)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Yellow, TEXT("You are further away!"));
+		Message(TEXT("You are further away!"), -1, 5.0f, FColor::Yellow);
 	}
 	else if (OverlappedComponent == OuterSphereComponent)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, TEXT("I don't see you anymore!"));
+		Message(TEXT("I don't see you anymore!"), -1, 5.0f, FColor::Green);
 	}
 }

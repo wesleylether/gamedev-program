@@ -5,8 +5,6 @@
 
 ADestructionZone::ADestructionZone()
 {
-	PrimaryActorTick.bCanEverTick = true;
-
 	DestructionBox = CreateDefaultSubobject<UBoxComponent>(TEXT("DestructionBox"));
 	SetRootComponent(DestructionBox);
 }
@@ -24,6 +22,6 @@ void ADestructionZone::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActo
 	{
 		OtherActor->Destroy();
 
-		UE_LOG(LogTemp, Warning, TEXT("Actor: %s destroyed"), *OtherActor->GetName());
+		Log(FString::Printf(TEXT("Actor: %s destroyed"), *OtherActor->GetName()));
 	}
 }

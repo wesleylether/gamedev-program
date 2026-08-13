@@ -1,21 +1,16 @@
 #include "SpawnDefer.h"
 
 #include "Components/BoxComponent.h"
-#include "SpawningAndTimers/Base/BaseSpawnObject.h"
 #include "UnrealProgramGameCharacter.h"
+#include "AbstractClasses/BaseSpawnObject.h"
 
 ASpawnDefer::ASpawnDefer()
 {
-	PrimaryActorTick.bCanEverTick = true;
-
-	SceneRootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("SceneRootComponent"));
-	SetRootComponent(SceneRootComponent);
-
 	SpawnBox = CreateDefaultSubobject<UBoxComponent>(TEXT("SpawnBox"));
-	SpawnBox->SetupAttachment(SceneRootComponent);
+	SpawnBox->SetupAttachment(GetRootComponent());
 
 	SpawnTarget = CreateDefaultSubobject<USceneComponent>(TEXT("SpawnTarget"));
-	SpawnTarget->SetupAttachment(SceneRootComponent);
+	SpawnTarget->SetupAttachment(GetRootComponent());
 }
 
 void ASpawnDefer::BeginPlay()
@@ -36,11 +31,11 @@ void ASpawnDefer::BeginPlay()
 
 	if (!SpawnedActor)
 	{
-		UE_LOG(LogTemp, Error, TEXT("SpawnedActor is null in: %s"), *GetName());
+		Log(FString::Printf(TEXT("SpawnedActor is null in: %s"), *GetName()));
 	}
 	else
 	{
-		UE_LOG(LogTemp, Display, TEXT("Defer SpawnedActor: %s"), *GetName());
+		Log(FString::Printf(TEXT("SpawnedActor: %s"), *SpawnedActor->GetName()));
 	}
 }
 

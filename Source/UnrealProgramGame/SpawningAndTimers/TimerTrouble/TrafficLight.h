@@ -1,17 +1,14 @@
 #pragma once
 
+#include "AbstractClasses/BaseMeshActor.h"
 #include "CoreMinimal.h"
-#include "TransformsAndMovement/Base/BaseMovementActor.h"
 
 #include "TrafficLight.generated.h"
 
 UCLASS()
-class UNREALPROGRAMGAME_API ATrafficLight : public ABaseMovementActor
+class UNREALPROGRAMGAME_API ATrafficLight : public ABaseMeshActor
 {
 	GENERATED_BODY()
-
-public:
-	ATrafficLight();
 
 protected:
 	virtual void BeginPlay() override;

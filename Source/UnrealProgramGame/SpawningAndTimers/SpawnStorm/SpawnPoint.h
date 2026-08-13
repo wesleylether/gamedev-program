@@ -1,5 +1,6 @@
 #pragma once
 
+#include "AbstractClasses/BaseActor.h"
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 
@@ -9,7 +10,7 @@ class ABaseSpawnObject;
 class UArrowComponent;
 
 UCLASS()
-class UNREALPROGRAMGAME_API ASpawnPoint : public AActor
+class UNREALPROGRAMGAME_API ASpawnPoint : public ABaseActor
 {
 	GENERATED_BODY()
 
@@ -21,9 +22,6 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<ABaseSpawnObject> SpawnClass;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	TObjectPtr<USceneComponent> SceneRootComponent;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TObjectPtr<UArrowComponent> ArrowComponent;

@@ -1,14 +1,14 @@
 #pragma once
 
+#include "AbstractClasses/BaseMeshActor.h"
 #include "CoreMinimal.h"
-#include "TransformsAndMovement/Base/BaseMovementActor.h"
 
 #include "PauseResumeTimer.generated.h"
 
 class UBoxComponent;
 
 UCLASS()
-class UNREALPROGRAMGAME_API APauseResumeTimer : public ABaseMovementActor
+class UNREALPROGRAMGAME_API APauseResumeTimer : public ABaseMeshActor
 {
 	GENERATED_BODY()
 

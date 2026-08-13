@@ -1,8 +1,8 @@
 
 #pragma once
 
-#include "TransformsAndMovement/Base/BaseMovementActor.h"
 #include "CoreMinimal.h"
+#include "AbstractClasses/BaseMovementActor.h"
 
 #include "AdvancedWaypoints.generated.h"
 

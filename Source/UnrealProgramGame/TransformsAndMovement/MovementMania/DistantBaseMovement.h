@@ -1,8 +1,9 @@
 #pragma once
 
-#include "TransformsAndMovement/Base/BaseMovementActor.h"
 #include "Components/ArrowComponent.h"
 #include "CoreMinimal.h"
+#include "AbstractClasses/BaseMovementActor.h"
+
 
 #include "DistantBaseMovement.generated.h"
 
@@ -16,11 +17,10 @@ class UNREALPROGRAMGAME_API ADistantBaseMovement : public ABaseMovementActor
 public:
 	ADistantBaseMovement();
 
+	virtual void Tick(float DeltaTime) override;
+
 protected:
 	virtual void BeginPlay() override;
-
-public:
-	virtual void Tick(float DeltaTime) override;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	UArrowComponent* ArrowComponent;

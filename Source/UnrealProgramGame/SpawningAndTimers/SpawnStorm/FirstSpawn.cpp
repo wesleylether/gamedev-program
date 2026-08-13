@@ -1,12 +1,12 @@
 #include "FirstSpawn.h"
 
-#include "SpawningAndTimers/Base/BaseSpawnObject.h"
+#include "AbstractClasses/BaseSpawnObject.h"
 
 void AFirstSpawn::BeginPlay()
 {
 	Super::BeginPlay();
 
-	const FVector  Location = GetActorLocation();
+	const FVector Location = GetActorLocation();
 	const FRotator Rotation = GetActorRotation();
 
 	FActorSpawnParameters SpawnParams;
@@ -17,6 +17,6 @@ void AFirstSpawn::BeginPlay()
 
 	if (!SpawnedActor)
 	{
-		UE_LOG(LogTemp, Error, TEXT("Failed to spawn actor: %s"), *GetName());
+		Log(FString::Printf(TEXT("Failed to spawn actor: %s"), *GetName()));
 	}
 }

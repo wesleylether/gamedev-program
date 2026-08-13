@@ -2,8 +2,8 @@
 
 #pragma once
 
+#include "AbstractClasses/BaseMovementActor.h"
 #include "CoreMinimal.h"
-#include "TransformsAndMovement/Base/BaseMovementActor.h"
 
 #include "SineWaveRotation.generated.h"
 
@@ -25,5 +25,5 @@ protected:
 	FRotator RotationSpeeds = FRotator(100.0f, 75.0f, 50.0f);
 
 	FRotator InitialRotation;
-	float	 RunningTime = 0.0f;
+	float RunningTime = 0.0f;
 };

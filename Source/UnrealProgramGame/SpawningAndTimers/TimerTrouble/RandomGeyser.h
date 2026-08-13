@@ -1,7 +1,7 @@
 #pragma once
 
+#include "AbstractClasses/BaseMeshActor.h"
 #include "CoreMinimal.h"
-#include "TransformsAndMovement/Base/BaseMovementActor.h"
 
 #include "RandomGeyser.generated.h"
 
@@ -9,7 +9,7 @@ class UNiagaraSystem;
 class USphereComponent;
 
 UCLASS()
-class UNREALPROGRAMGAME_API ARandomGeyser : public ABaseMovementActor
+class UNREALPROGRAMGAME_API ARandomGeyser : public ABaseMeshActor
 {
 	GENERATED_BODY()
 

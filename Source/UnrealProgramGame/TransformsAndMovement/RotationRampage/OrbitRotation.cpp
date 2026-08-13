@@ -3,7 +3,7 @@
 AOrbitRotation::AOrbitRotation()
 {
 	SecondStaticMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Second Static Mesh"));
-	SecondStaticMesh->SetupAttachment(RootComp);
+	SecondStaticMesh->SetupAttachment(GetRootComponent());
 }
 
 void AOrbitRotation::BeginPlay()

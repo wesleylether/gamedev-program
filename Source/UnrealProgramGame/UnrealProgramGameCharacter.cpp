@@ -14,6 +14,7 @@
 #include "Components/CapsuleComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "EnhancedInputComponent.h"
+#include "Enum/EScreenMessageKeys.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "InputActionValue.h"
 #include "TimerManager.h"
@@ -28,6 +29,7 @@ AUnrealProgramGameCharacter::AUnrealProgramGameCharacter()
 {
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(55.f, 96.0f);
+	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
 
 	// Create the first person mesh that will be viewed only by this character's owner
 	FirstPersonMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("First Person Mesh"));
@@ -377,7 +379,7 @@ void AUnrealProgramGameCharacter::RotateInput(const FInputActionInstance& Instan
 
 	if (GEngine)
 	{
-		GEngine->AddOnScreenDebugMessage(1, 3.0f, FColor::White, FString::Printf(TEXT("Value: %f"), AxisValue));
+		GEngine->AddOnScreenDebugMessage(static_cast<uint64>(EScreenMessageKey::Input_Rotation), 3.0f, FColor::White, FString::Printf(TEXT("Value: %f"), AxisValue));
 	}
 
 	if (GetController() && AxisValue != 0.0f)
@@ -395,7 +397,7 @@ void AUnrealProgramGameCharacter::RotateTriggerOngoing(const FInputActionInstanc
 {
 	if (GEngine)
 	{
-		GEngine->AddOnScreenDebugMessage(2, 3.0f, FColor::Green, FString::Printf(TEXT("Ongoing: %f"), Instance.GetElapsedTime()));
+		GEngine->AddOnScreenDebugMessage(static_cast<uint64>(EScreenMessageKey::Input_Ongoing), 3.0f, FColor::Green, FString::Printf(TEXT("Ongoing: %f"), Instance.GetElapsedTime()));
 	}
 }
 
@@ -403,7 +405,7 @@ void AUnrealProgramGameCharacter::RotateTriggerTriggered(const FInputActionInsta
 {
 	if (GEngine)
 	{
-		GEngine->AddOnScreenDebugMessage(3, 3.0f, FColor::Blue, FString::Printf(TEXT("Triggered: %f"), Instance.GetTriggeredTime()));
+		GEngine->AddOnScreenDebugMessage(static_cast<uint64>(EScreenMessageKey::Input_Triggered), 3.0f, FColor::Blue, FString::Printf(TEXT("Triggered: %f"), Instance.GetTriggeredTime()));
 	}
 }
 

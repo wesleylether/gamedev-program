@@ -10,13 +10,13 @@ AIcicleTrap::AIcicleTrap()
 	PrimaryActorTick.bCanEverTick = false;
 
 	CeilingMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("CeilingMesh"));
-	CeilingMesh->SetupAttachment(SceneRoot);
+	CeilingMesh->SetupAttachment(GetRootComponent());
 
 	SpawnPoint = CreateDefaultSubobject<UArrowComponent>(TEXT("SpawnPoint"));
-	SpawnPoint->SetupAttachment(SceneRoot);
+	SpawnPoint->SetupAttachment(GetRootComponent());
 
 	BoxCollider = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxComponent"));
-	BoxCollider->SetupAttachment(SceneRoot);
+	BoxCollider->SetupAttachment(GetRootComponent());
 }
 
 void AIcicleTrap::BeginPlay()
@@ -43,7 +43,7 @@ void AIcicleTrap::SpawnIcicle()
 	ActiveIcicle = GetWorld()->SpawnActor<AIcicle>(Icicle, SpawnLocation, SpawnRotation, SpawnParams);
 	if (!ActiveIcicle)
 	{
-		UE_LOG(LogTemp, Error, TEXT("Failed to spawn icicle in %s"), *GetName());
+		Log(FString::Printf(TEXT("Failed to spawn icicle in %s"), *GetName()), ELogVerbosity::Error);
 		return;
 	}
 

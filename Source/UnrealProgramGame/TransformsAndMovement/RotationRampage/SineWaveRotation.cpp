@@ -16,7 +16,7 @@ void ASineWaveRotation::Tick(const float DeltaTime)
 	RunningTime += DeltaTime;
 
 	auto GetFrequency = [](const float Speed, const float MaxAngle) -> float {
-		return (MaxAngle != 0.0f) ? (PI * Speed) / MaxAngle : 0.0f;
+		return MaxAngle != 0.0f ? (PI * Speed) / MaxAngle : 0.0f;
 	};
 
 	const float PitchFreq = GetFrequency(RotationSpeeds.Pitch, MaxAngles.Pitch);

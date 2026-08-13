@@ -1,7 +1,7 @@
 #pragma once
 
-#include "CollisionDetection/Base/BaseOverlapActor.h"
 #include "CoreMinimal.h"
+#include "AbstractClasses/BaseOverlapActor.h"
 
 #include "CounterOverlap.generated.h"
 

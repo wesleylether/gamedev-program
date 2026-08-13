@@ -1,5 +1,6 @@
 #pragma once
 
+#include "AbstractClasses/BaseActor.h"
 #include "CoreMinimal.h"
 
 #include "CannonBall.generated.h"
@@ -10,7 +11,7 @@ class USphereComponent;
 class URadialForceComponent;
 
 UCLASS()
-class UNREALPROGRAMGAME_API ACannonBall : public AActor
+class UNREALPROGRAMGAME_API ACannonBall : public ABaseActor
 {
 	GENERATED_BODY()
 
