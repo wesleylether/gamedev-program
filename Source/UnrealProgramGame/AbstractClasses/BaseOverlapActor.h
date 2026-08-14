@@ -1,15 +1,14 @@
 #pragma once
 
+#include "AbstractClasses/BaseActor.h"
 #include "CoreMinimal.h"
-#include "GameFramework/Actor.h"
 
 #include "BaseOverlapActor.generated.h"
 
 class UBoxComponent;
-class USceneComponent;
 
 UCLASS()
-class UNREALPROGRAMGAME_API ABaseOverlapActor : public AActor
+class UNREALPROGRAMGAME_API ABaseOverlapActor : public ABaseActor
 {
 	GENERATED_BODY()
 
@@ -20,26 +19,23 @@ protected:
 	virtual void BeginPlay() override;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Collision Detection")
-	TObjectPtr<USceneComponent> RootComp;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Collision Detection")
 	TObjectPtr<UBoxComponent> BoxComponent;
-	
+
 	UFUNCTION()
 	virtual void HandleBoxComponentBeginOverlap(
 		UPrimitiveComponent* OverlappedComponent,
-		AActor*				 OtherActor,
+		AActor* OtherActor,
 		UPrimitiveComponent* OtherComp,
-		int32				 OtherBodyIndex,
-		bool				 bFromSweep,
-		const FHitResult&	 SweepResult);
+		int32 OtherBodyIndex,
+		bool bFromSweep,
+		const FHitResult& SweepResult);
 
 	UFUNCTION()
 	virtual void HandleBoxComponentEndOverlap(
 		UPrimitiveComponent* OverlappedComponent,
-		AActor*				 OtherActor,
+		AActor* OtherActor,
 		UPrimitiveComponent* OtherComp,
-		int32				 OtherBodyIndex);
+		int32 OtherBodyIndex);
 
 	static void PrintOverlapMessage(const FString& EventName, const AActor* OtherActor, const UPrimitiveComponent* OtherComp);
 };

@@ -7,7 +7,7 @@ ARespawningPickup::ARespawningPickup()
 	PrimaryActorTick.bCanEverTick = true;
 
 	TargetComponent = CreateDefaultSubobject<USceneComponent>(TEXT("TargetComponent"));
-	TargetComponent->SetupAttachment(SceneRoot);
+	TargetComponent->SetupAttachment(GetRootComponent());
 }
 
 void ARespawningPickup::BeginPlay()
@@ -26,7 +26,7 @@ void ARespawningPickup::SpawnPickup()
 	{
 		if (RespawnCount >= RespawnLimit)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Respawn limit reached in %s"), *GetName());
+			Log(FString::Printf(TEXT("Respawn limit reached in %s"), *GetName()));
 			return;
 		}
 	}

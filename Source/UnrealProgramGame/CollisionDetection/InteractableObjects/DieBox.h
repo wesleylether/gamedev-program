@@ -3,14 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Actor.h"
+#include "AbstractClasses/BaseActor.h"
 
 #include "DieBox.generated.h"
 
 class UBoxComponent;
 
 UCLASS()
-class UNREALPROGRAMGAME_API ADieBox : public AActor
+class UNREALPROGRAMGAME_API ADieBox : public ABaseActor
 {
 	GENERATED_BODY()
 

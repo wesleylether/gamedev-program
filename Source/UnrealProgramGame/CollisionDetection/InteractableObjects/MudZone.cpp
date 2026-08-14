@@ -8,16 +8,11 @@
 
 AMudZone::AMudZone()
 {
-	SceneRootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("SceneRootComponent"));
-	SetRootComponent(SceneRootComponent);
-
 	BoxComponent = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxComponent"));
-	BoxComponent->SetupAttachment(SceneRootComponent);
+	BoxComponent->SetupAttachment(GetRootComponent());
 
 	StaticMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMeshComponent"));
 	StaticMeshComponent->SetupAttachment(BoxComponent);
-
-	PrimaryActorTick.bCanEverTick = true;
 }
 
 void AMudZone::BeginPlay()

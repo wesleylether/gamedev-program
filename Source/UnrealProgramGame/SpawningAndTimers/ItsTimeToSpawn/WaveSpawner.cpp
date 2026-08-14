@@ -6,7 +6,7 @@
 AWaveSpawner::AWaveSpawner()
 {
 	Box = CreateDefaultSubobject<UBoxComponent>(TEXT("Box"));
-	Box->SetupAttachment(SceneRoot);
+	Box->SetupAttachment(GetRootComponent());
 }
 
 void AWaveSpawner::BeginPlay()
@@ -24,18 +24,18 @@ void AWaveSpawner::RunWave(int32 WaveIndex)
 
 	if (wave.WaveActorClass == nullptr)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Wave %d has no actor class"), WaveIndex);
+		Log(FString::Printf(TEXT("Wave %d has no actor class"), WaveIndex));
 		return;
 	}
 
-	UE_LOG(LogTemp, Warning, TEXT("Running wave %d!"), WaveIndex + 1);
+	Log(FString::Printf(TEXT("Running wave %d!"), WaveIndex + 1));
 
 	CurrentSpawnCount = 0;
 	GetWorldTimerManager().SetTimer(SpawnTimerHandle, this, &AWaveSpawner::SpawnNextActor, wave.ActorSpawnInterval, true);
 
 	FTimerHandle TimerHandle;
 	GetWorldTimerManager().SetTimer(TimerHandle, this, &AWaveSpawner::OnWaveDurationEnded, wave.WaveDuration, false);
-	UE_LOG(LogTemp, Warning, TEXT("Next wave in %f seconds"), wave.WaveDuration);
+	Log(FString::Printf(TEXT("Next wave in %f seconds"), wave.WaveDuration));
 }
 
 void AWaveSpawner::SpawnNextActor()
@@ -74,7 +74,7 @@ void AWaveSpawner::OnWaveDurationEnded()
 	if (CurrentWaveIndex >= Waves.Num())
 	{
 		bWaveActive = false;
-		UE_LOG(LogTemp, Warning, TEXT("No more waves"));
+		Log(FString::Printf(TEXT("No more waves")));
 		return;
 	}
 
@@ -94,7 +94,7 @@ void AWaveSpawner::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* O
 
 	if (Waves.Num() == 0)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("No waves defined"));
+		Log(FString::Printf(TEXT("No waves defined")));
 		return;
 	}
 

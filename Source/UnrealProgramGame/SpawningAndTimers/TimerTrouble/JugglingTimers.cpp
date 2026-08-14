@@ -2,20 +2,15 @@
 
 #include "Engine/StaticMeshActor.h"
 
-AJugglingTimers::AJugglingTimers()
-{
-	PrimaryActorTick.bCanEverTick = false;
-}
-
 void AJugglingTimers::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (!StaticMesh)
+	if (!Mesh)
 		return;
 
-	if (StaticMesh->GetMaterial(0))
-		DynamicMaterial = StaticMesh->CreateAndSetMaterialInstanceDynamic(0);
+	if (Mesh->GetMaterial(0))
+		DynamicMaterial = Mesh->CreateAndSetMaterialInstanceDynamic(0);
 
 	GetWorldTimerManager().SetTimer(ColorTimerHandle, this, &AJugglingTimers::ChangeColor, ColorTimerLength, true);
 	GetWorldTimerManager().SetTimer(LogTimerHandle, this, &AJugglingTimers::LogMessage, LogTimerLength, true);
@@ -33,7 +28,7 @@ void AJugglingTimers::ChangeColor()
 
 void AJugglingTimers::LogMessage()
 {
-	UE_LOG(LogTemp, Warning, TEXT("TimerHandled in %s"), *GetName());
+	Log(FString::Printf(TEXT("TimerHandled in %s"), *GetName()));
 }
 
 void AJugglingTimers::SpawnActor()
@@ -45,7 +40,7 @@ void AJugglingTimers::SpawnActor()
 	SpawnParams.Owner = this;
 	SpawnParams.Instigator = GetInstigator();
 
-	const FVector  SpawnLocation = GetActorLocation();
+	const FVector SpawnLocation = GetActorLocation();
 	const FRotator SpawnRotation = FRotator(FMath::FRandRange(0.0f, 360.0f));
 
 	if (AStaticMeshActor* StaticMeshActor = GetWorld()->SpawnActor<AStaticMeshActor>(SpawnLocation, SpawnRotation, SpawnParams))

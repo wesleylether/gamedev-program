@@ -1,6 +1,7 @@
 #pragma once
 
-#include "TransformsAndMovement/Base/BaseMovementActor.h"
+#include "AbstractClasses/BaseMovementActor.h"
+
 #include "CoreMinimal.h"
 
 #include "SpeedCurveMovement.generated.h"

@@ -1,14 +1,14 @@
 #pragma once
 
+#include "AbstractClasses/BaseMeshActor.h"
 #include "CoreMinimal.h"
-#include "GameFramework/Actor.h"
 
 #include "ActivatedPlatform.generated.h"
 
 class ATargetPoint;
 
 UCLASS()
-class UNREALPROGRAMGAME_API AActivatedPlatform : public AActor
+class UNREALPROGRAMGAME_API AActivatedPlatform : public ABaseMeshActor
 {
 	GENERATED_BODY()
 
@@ -18,12 +18,6 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	TObjectPtr<USceneComponent> RootSceneComponent;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TObjectPtr<UStaticMeshComponent> PlatformMeshComponent;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TObjectPtr<ATargetPoint> TargetPoint;
@@ -35,7 +29,7 @@ protected:
 	void OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 
 private:
-	bool	bIsMoving = false;
+	bool bIsMoving = false;
 	FVector BeginLocation;
 	FVector EndLocation;
 	FVector Destination;

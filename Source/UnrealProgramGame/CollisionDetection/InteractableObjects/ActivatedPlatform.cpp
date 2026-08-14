@@ -5,12 +5,6 @@
 
 AActivatedPlatform::AActivatedPlatform()
 {
-	RootSceneComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RootSceneComponent"));
-	SetRootComponent(RootSceneComponent);
-
-	PlatformMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("PlatformMeshComponent"));
-	PlatformMeshComponent->SetupAttachment(RootSceneComponent);
-
 	PrimaryActorTick.bCanEverTick = true;
 }
 
@@ -35,14 +29,14 @@ void AActivatedPlatform::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (!TargetPoint)
+	if (!TargetPoint || !Mesh)
 		return;
 
 	BeginLocation = GetActorLocation();
 	EndLocation = TargetPoint->GetActorLocation();
 	Destination = BeginLocation;
 
-	PlatformMeshComponent->OnComponentHit.AddDynamic(this, &AActivatedPlatform::OnHit);
+	Mesh->OnComponentHit.AddDynamic(this, &AActivatedPlatform::OnHit);
 }
 
 void AActivatedPlatform::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "CollisionDetection/Base/BaseOverlapActor.h"
+#include "AbstractClasses/BaseOverlapActor.h"
 #include "CoreMinimal.h"
 
 #include "OnlyPlayerOverlap.generated.h"

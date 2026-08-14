@@ -7,14 +7,9 @@
 
 ADieBox::ADieBox()
 {
-	SceneRootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("SceneRootComponent"));
-	SetRootComponent(SceneRootComponent);
-
 	BoxComponent = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxComponent"));
 	BoxComponent->SetBoxExtent(FVector(100.0f, 100.0f, 40.0f));
-	BoxComponent->SetupAttachment(SceneRootComponent);
-
-	PrimaryActorTick.bCanEverTick = true;
+	BoxComponent->SetupAttachment(GetRootComponent());
 }
 
 void ADieBox::BeginPlay()
@@ -32,7 +27,7 @@ void ADieBox::HandleOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Ot
 		{
 			if (APawn* Pawn = PlayerController->GetPawn())
 			{
-				GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, TEXT("Player died"));
+				Message(TEXT("Player died"), -1, 5.0f, FColor::Red);
 
 				PlayerController->UnPossess();
 				Pawn->Destroy();

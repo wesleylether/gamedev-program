@@ -8,11 +8,8 @@
 
 ACoinPickup::ACoinPickup()
 {
-	RootSceneComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RootSceneComponent"));
-	SetRootComponent(RootSceneComponent);
-
 	SphereComponent = CreateDefaultSubobject<USphereComponent>(TEXT("SphereComponent"));
-	SphereComponent->SetupAttachment(RootSceneComponent);
+	SphereComponent->SetupAttachment(GetRootComponent());
 	SphereComponent->SetSphereRadius(150.0f);
 	SphereComponent->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	SphereComponent->SetCollisionObjectType(ECC_WorldDynamic);
@@ -99,10 +96,10 @@ void ACoinPickup::UpdatePickupAnimation(const float DeltaTime)
 {
 	PickupAnimationElapsedTime += DeltaTime;
 
-	const float		AnimationAlpha = FMath::Clamp(PickupAnimationElapsedTime / PickupAnimationDuration, 0.0f, 1.0f);
+	const float AnimationAlpha = FMath::Clamp(PickupAnimationElapsedTime / PickupAnimationDuration, 0.0f, 1.0f);
 	constexpr float DownwardPhaseThreshold = 0.25f;
 
-	float VerticalOffset = 0.0f;
+	float VerticalOffset;
 	float ScaleValue = 1.0f;
 
 	if (AnimationAlpha <= DownwardPhaseThreshold)

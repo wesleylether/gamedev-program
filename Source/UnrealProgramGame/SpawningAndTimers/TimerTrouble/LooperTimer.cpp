@@ -1,19 +1,14 @@
 #include "LooperTimer.h"
 
-ALooperTimer::ALooperTimer()
-{
-	PrimaryActorTick.bCanEverTick = false;
-}
-
 void ALooperTimer::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (!StaticMesh)
+	if (!Mesh)
 		return;
 
-	if (StaticMesh->GetMaterial(0))
-		DynamicMaterial = StaticMesh->CreateAndSetMaterialInstanceDynamic(0);
+	if (Mesh->GetMaterial(0))
+		DynamicMaterial = Mesh->CreateAndSetMaterialInstanceDynamic(0);
 
 	FTimerHandle TimerHandle;
 	GetWorldTimerManager().SetTimer(TimerHandle, this, &ALooperTimer::ChangeColor, TimerLength, true);

@@ -1,8 +1,8 @@
 
 #pragma once
 
+#include "AbstractClasses/BaseActor.h"
 #include "CoreMinimal.h"
-#include "GameFramework/Actor.h"
 
 #include "SpawnDefer.generated.h"
 
@@ -10,7 +10,7 @@ class ABaseSpawnObject;
 class UBoxComponent;
 
 UCLASS()
-class UNREALPROGRAMGAME_API ASpawnDefer : public AActor
+class UNREALPROGRAMGAME_API ASpawnDefer : public ABaseActor
 {
 	GENERATED_BODY()
 
@@ -19,9 +19,6 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	TObjectPtr<USceneComponent> SceneRootComponent;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TObjectPtr<UBoxComponent> SpawnBox;

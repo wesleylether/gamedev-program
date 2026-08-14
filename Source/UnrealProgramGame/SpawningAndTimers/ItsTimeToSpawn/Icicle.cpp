@@ -1,10 +1,5 @@
 #include "Icicle.h"
 
-AIcicle::AIcicle()
-{
-	PrimaryActorTick.bCanEverTick = false;
-}
-
 void AIcicle::TurnPhysicsOn()
 {
 	Mesh->SetSimulatePhysics(true);

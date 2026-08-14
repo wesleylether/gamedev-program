@@ -1,19 +1,14 @@
 #include "TimerLimit.h"
 
-ATimerLimit::ATimerLimit()
-{
-	PrimaryActorTick.bCanEverTick = false;
-}
-
 void ATimerLimit::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (!StaticMesh)
+	if (!Mesh)
 		return;
 
-	if (StaticMesh->GetMaterial(0))
-		DynamicMaterial = StaticMesh->CreateAndSetMaterialInstanceDynamic(0);
+	if (Mesh->GetMaterial(0))
+		DynamicMaterial = Mesh->CreateAndSetMaterialInstanceDynamic(0);
 
 	GetWorldTimerManager().SetTimer(TimerHandle, this, &ATimerLimit::ChangeColor, TimerLength, true);
 }

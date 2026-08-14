@@ -5,11 +5,8 @@
 
 ABaseOverlapActor::ABaseOverlapActor()
 {
-	RootComp = CreateDefaultSubobject<USceneComponent>(TEXT("RootComp"));
-	SetRootComponent(RootComp);
-
 	BoxComponent = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxComponent"));
-	BoxComponent->SetupAttachment(RootComp);
+	BoxComponent->SetupAttachment(GetRootComponent());
 	BoxComponent->SetLineThickness(3.0f);
 	BoxComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	BoxComponent->SetBoxExtent(FVector(64.0f));
@@ -32,36 +29,30 @@ void ABaseOverlapActor::BeginPlay()
 
 void ABaseOverlapActor::HandleBoxComponentBeginOverlap(
 	UPrimitiveComponent* OverlappedComponent,
-	AActor*				 OtherActor,
+	AActor* OtherActor,
 	UPrimitiveComponent* OtherComp,
-	int32				 OtherBodyIndex,
-	bool				 bFromSweep,
-	const FHitResult&	 SweepResult)
+	int32 OtherBodyIndex,
+	bool bFromSweep,
+	const FHitResult& SweepResult)
 {
 	if (!OverlappedComponent || !OtherActor || OtherActor == this || !OtherComp)
 	{
 		return;
 	}
 
-	PrintOverlapMessage(TEXT("Overlap Begin"), OtherActor, OtherComp);
+	Message(FString::Printf(TEXT("Overlap Begin: %s | %s"), *GetNameSafe(OtherActor), *GetNameSafe(OtherComp)));
 }
 
 void ABaseOverlapActor::HandleBoxComponentEndOverlap(
 	UPrimitiveComponent* OverlappedComponent,
-	AActor*				 OtherActor,
+	AActor* OtherActor,
 	UPrimitiveComponent* OtherComp,
-	int32				 OtherBodyIndex)
+	int32 OtherBodyIndex)
 {
 	if (!OverlappedComponent || !OtherActor || OtherActor == this || !OtherComp)
 	{
 		return;
 	}
 
-	PrintOverlapMessage(TEXT("Overlap End"), OtherActor, OtherComp);
-}
-
-void ABaseOverlapActor::PrintOverlapMessage(const FString& EventName, const AActor* OtherActor, const UPrimitiveComponent* OtherComp)
-{
-	const FString Message = FString::Printf(TEXT("%s: %s | %s"), *EventName, *GetNameSafe(OtherActor), *GetNameSafe(OtherComp));
-	GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green, Message);
+	Message(FString::Printf(TEXT("Overlap End: %s | %s"), *GetNameSafe(OtherActor), *GetNameSafe(OtherComp)));
 }

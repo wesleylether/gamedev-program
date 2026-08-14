@@ -1,17 +1,14 @@
 #pragma once
 
+#include "AbstractClasses/BaseMeshActor.h"
 #include "CoreMinimal.h"
-#include "TransformsAndMovement/Base/BaseMovementActor.h"
 
 #include "JugglingTimers.generated.h"
 
 UCLASS()
-class UNREALPROGRAMGAME_API AJugglingTimers : public ABaseMovementActor
+class UNREALPROGRAMGAME_API AJugglingTimers : public ABaseMeshActor
 {
 	GENERATED_BODY()
-
-public:
-	AJugglingTimers();
 
 protected:
 	virtual void BeginPlay() override;

@@ -1,22 +1,19 @@
 #include "SpawnPoint.h"
 
 #include "Components/ArrowComponent.h"
-#include "SpawningAndTimers/Base/BaseSpawnObject.h"
+#include "AbstractClasses/BaseSpawnObject.h"
 
 ASpawnPoint::ASpawnPoint()
 {
-	SceneRootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("SceneRootComponent"));
-	SetRootComponent(SceneRootComponent);
-
 	ArrowComponent = CreateDefaultSubobject<UArrowComponent>(TEXT("ArrowComponent"));
-	ArrowComponent->SetupAttachment(SceneRootComponent);
+	ArrowComponent->SetupAttachment(GetRootComponent());
 }
 
 void ASpawnPoint::BeginPlay()
 {
 	Super::BeginPlay();
 
-	const FVector  Location = ArrowComponent->GetComponentLocation();
+	const FVector Location = ArrowComponent->GetComponentLocation();
 	const FRotator Rotation = ArrowComponent->GetComponentRotation();
 
 	FActorSpawnParameters SpawnParams;
@@ -27,6 +24,6 @@ void ASpawnPoint::BeginPlay()
 
 	if (!SpawnedActor)
 	{
-		UE_LOG(LogTemp, Error, TEXT("Failed to spawn actor: %s"), *GetName());
+		Log(FString::Printf(TEXT("Failed to spawn actor: %s"), *GetName()));
 	}
 }

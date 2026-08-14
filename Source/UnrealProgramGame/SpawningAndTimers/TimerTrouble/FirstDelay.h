@@ -1,17 +1,14 @@
 #pragma once
 
+#include "AbstractClasses/BaseMeshActor.h"
 #include "CoreMinimal.h"
-#include "TransformsAndMovement/Base/BaseMovementActor.h"
 
 #include "FirstDelay.generated.h"
 
 UCLASS()
-class UNREALPROGRAMGAME_API AFirstDelay : public ABaseMovementActor
+class UNREALPROGRAMGAME_API AFirstDelay : public ABaseMeshActor
 {
 	GENERATED_BODY()
-
-public:
-	AFirstDelay();
 
 protected:
 	virtual void BeginPlay() override;

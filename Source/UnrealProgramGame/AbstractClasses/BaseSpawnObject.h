@@ -1,12 +1,12 @@
 #pragma once
 
+#include "AbstractClasses/BaseMeshActor.h"
 #include "CoreMinimal.h"
-#include "GameFramework/Actor.h"
 
 #include "BaseSpawnObject.generated.h"
 
 UCLASS()
-class UNREALPROGRAMGAME_API ABaseSpawnObject : public AActor
+class UNREALPROGRAMGAME_API ABaseSpawnObject : public ABaseMeshActor
 {
 	GENERATED_BODY()
 
@@ -15,8 +15,4 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Mesh")
 	UStaticMeshComponent* GetMesh() const { return Mesh; }
-
-protected:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TObjectPtr<UStaticMeshComponent> Mesh;
 };

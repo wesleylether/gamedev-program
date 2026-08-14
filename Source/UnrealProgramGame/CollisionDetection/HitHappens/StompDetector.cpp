@@ -2,24 +2,19 @@
 
 #include "GameFramework/Character.h"
 
-AStompDetector::AStompDetector()
-{
-	PrimaryActorTick.bCanEverTick = false;
-}
-
 void AStompDetector::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (!StaticMesh)
+	if (!Mesh)
 		return;
 
-	if (StaticMesh->GetMaterial(0))
+	if (Mesh->GetMaterial(0))
 	{
-		DynamicMaterial = StaticMesh->CreateAndSetMaterialInstanceDynamic(0);
+		DynamicMaterial = Mesh->CreateAndSetMaterialInstanceDynamic(0);
 	}
 
-	StaticMesh->OnComponentHit.AddDynamic(this, &AStompDetector::OnHit);
+	Mesh->OnComponentHit.AddDynamic(this, &AStompDetector::OnHit);
 }
 
 void AStompDetector::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
@@ -32,7 +27,7 @@ void AStompDetector::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor
 	if (FMath::Abs(Hit.ImpactNormal.Z) < MinStompZNormal)
 		return;
 
-	UE_LOG(LogTemp, Warning, TEXT("STOMPED!"));
+	Log(FString::Printf(TEXT("STOMPED!")));
 
 	ApplyRandomColor();
 }

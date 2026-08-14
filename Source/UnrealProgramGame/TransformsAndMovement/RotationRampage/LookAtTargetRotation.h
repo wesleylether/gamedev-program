@@ -1,7 +1,7 @@
 #pragma once
 
+#include "AbstractClasses/BaseMovementActor.h"
 #include "CoreMinimal.h"
-#include "TransformsAndMovement/Base/BaseMovementActor.h"
 
 #include "LookAtTargetRotation.generated.h"
 
@@ -18,7 +18,7 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Rotation")
 	AActor* TargetActor;
-	
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Rotation")
 	float InterpolationSpeed = 4.0f;
 };

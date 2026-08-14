@@ -3,7 +3,7 @@
 ADistantBaseMovement::ADistantBaseMovement()
 {
 	ArrowComponent = CreateDefaultSubobject<UArrowComponent>(TEXT("Arrow"));
-	ArrowComponent->SetupAttachment(RootComp);
+	ArrowComponent->SetupAttachment(GetRootComponent());
 }
 
 void ADistantBaseMovement::BeginPlay()
@@ -23,7 +23,7 @@ void ADistantBaseMovement::Tick(float DeltaTime)
 
 	if (DistanceMoved >= DistanceThreshold)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Distance Moved: %f"), DistanceMoved);
+		Log(FString::Printf(TEXT("Distance Moved: %f"), DistanceMoved));
 		StartLocation = StartLocation + DirectionVector * DistanceThreshold;
 		SetActorLocation(StartLocation);
 		DirectionVector *= -1.0f;

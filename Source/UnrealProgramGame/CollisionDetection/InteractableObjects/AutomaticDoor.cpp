@@ -4,22 +4,16 @@
 
 AAutomaticDoor::AAutomaticDoor()
 {
-	SceneRootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("SceneRootComponent"));
-	SetRootComponent(SceneRootComponent);
-
 	DoorCollisionComponent = CreateDefaultSubobject<UBoxComponent>(TEXT("DoorCollisionComponent"));
-	DoorCollisionComponent->SetupAttachment(SceneRootComponent);
+	DoorCollisionComponent->SetupAttachment(GetRootComponent());
 	DoorCollisionComponent->SetCollisionObjectType(ECC_WorldDynamic);
 	DoorCollisionComponent->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	DoorCollisionComponent->SetCollisionResponseToAllChannels(ECR_Ignore);
 	DoorCollisionComponent->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
 	DoorCollisionComponent->SetCollisionResponseToChannel(ECC_PhysicsBody, ECR_Overlap);
 
-	StaticMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMeshComponent"));
-	StaticMeshComponent->SetupAttachment(SceneRootComponent);
-
 	DoorMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("DoorMeshComponent"));
-	DoorMeshComponent->SetupAttachment(SceneRootComponent);
+	DoorMeshComponent->SetupAttachment(GetRootComponent());
 
 	PrimaryActorTick.bCanEverTick = true;
 }
@@ -29,7 +23,7 @@ void AAutomaticDoor::BeginPlay()
 	Super::BeginPlay();
 
 	DoorStartLocation = DoorMeshComponent->GetComponentLocation();
-	DoorEndLocation = DoorStartLocation - FVector(0.0f, 0.0f, StaticMeshComponent->GetStaticMesh()->GetBounds().GetBox().GetSize().Z);
+	DoorEndLocation = DoorStartLocation - FVector(0.0f, 0.0f, Mesh->GetStaticMesh()->GetBounds().GetBox().GetSize().Z);
 	DoorDestination = DoorStartLocation;
 
 	DoorCollisionComponent->OnComponentBeginOverlap.AddDynamic(this, &AAutomaticDoor::OnOverlapBegin);

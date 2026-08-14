@@ -4,13 +4,11 @@
 
 AStockKeeper::AStockKeeper()
 {
-	PrimaryActorTick.bCanEverTick = false;
-
 	for (int32 i = 0; i < SpawnPointCount; ++i)
 	{
 		FString PickupName = FString::Printf(TEXT("SpawnPoint %d"), i);
 		USceneComponent* SpawnPoint = CreateDefaultSubobject<USceneComponent>(*PickupName);
-		SpawnPoint->SetupAttachment(SceneRoot);
+		SpawnPoint->SetupAttachment(GetRootComponent());
 
 		SpawnPoints.Add(SpawnPoint);
 	}

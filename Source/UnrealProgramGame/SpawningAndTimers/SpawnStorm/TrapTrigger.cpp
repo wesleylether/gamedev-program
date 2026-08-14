@@ -1,25 +1,17 @@
 #include "TrapTrigger.h"
 
+#include "AbstractClasses/BaseSpawnObject.h"
 #include "Components/ArrowComponent.h"
 #include "Components/BoxComponent.h"
-#include "SpawningAndTimers/Base/BaseSpawnObject.h"
 #include "UnrealProgramGameCharacter.h"
 
 ATrapTrigger::ATrapTrigger()
 {
-	PrimaryActorTick.bCanEverTick = true;
-
-	SceneRoot = CreateDefaultSubobject<USceneComponent>(TEXT("SceneRoot"));
-	SetRootComponent(SceneRoot);
-
 	TrapBox = CreateDefaultSubobject<UBoxComponent>(TEXT("TrapBox"));
-	TrapBox->SetupAttachment(SceneRoot);
-
-	TrapMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("TrapMesh"));
-	TrapMesh->SetupAttachment(SceneRoot);
+	TrapBox->SetupAttachment(GetRootComponent());
 
 	SpawnTarget = CreateDefaultSubobject<UArrowComponent>(TEXT("ArrowComponent"));
-	SpawnTarget->SetupAttachment(SceneRoot);
+	SpawnTarget->SetupAttachment(GetRootComponent());
 }
 
 void ATrapTrigger::BeginPlay()
@@ -40,7 +32,7 @@ void ATrapTrigger::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor
 
 	if (!SpawnClass)
 	{
-		UE_LOG(LogTemp, Error, TEXT("Spawn class is not set in actor: %s"), *GetName())
+		Log(FString::Printf(TEXT("Spawn class is not set in actor: %s"), *GetName()), ELogVerbosity::Error);
 		return;
 	}
 
@@ -52,7 +44,7 @@ void ATrapTrigger::OnBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor
 
 	if (!SObject)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Failed to spawn object: %s in actor: %s"), *SpawnClass->GetName(), *GetName());
+		Log(FString::Printf(TEXT("Failed to spawn object: %s in actor: %s"), *SpawnClass->GetName(), *GetName()));
 		return;
 	}
 

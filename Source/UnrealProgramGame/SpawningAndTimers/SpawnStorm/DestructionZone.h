@@ -1,14 +1,14 @@
 #pragma once
 
+#include "AbstractClasses/BaseActor.h"
 #include "CoreMinimal.h"
-#include "GameFramework/Actor.h"
 
 #include "DestructionZone.generated.h"
 
 class UBoxComponent;
 
 UCLASS()
-class UNREALPROGRAMGAME_API ADestructionZone : public AActor
+class UNREALPROGRAMGAME_API ADestructionZone : public ABaseActor
 {
 	GENERATED_BODY()
 

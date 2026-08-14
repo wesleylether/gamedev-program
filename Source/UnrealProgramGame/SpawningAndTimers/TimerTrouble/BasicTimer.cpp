@@ -1,19 +1,14 @@
 #include "BasicTimer.h"
 
-ABasicTimer::ABasicTimer()
-{
-	PrimaryActorTick.bCanEverTick = false;
-}
-
 void ABasicTimer::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (!StaticMesh)
+	if (!Mesh)
 		return;
 
-	if (StaticMesh->GetMaterial(0))
-		DynamicMaterial = StaticMesh->CreateAndSetMaterialInstanceDynamic(0);
+	if (Mesh->GetMaterial(0))
+		DynamicMaterial = Mesh->CreateAndSetMaterialInstanceDynamic(0);
 
 	FTimerHandle TimerHandle;
 	GetWorldTimerManager().SetTimer(TimerHandle, this, &ABasicTimer::ChangeColor, TimerLength, false);

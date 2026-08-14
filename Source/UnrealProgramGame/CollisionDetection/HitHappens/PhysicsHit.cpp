@@ -3,20 +3,20 @@
 APhysicsHit::APhysicsHit()
 {
 	PrimaryActorTick.bCanEverTick = false;
-	StaticMesh->SetSimulatePhysics(true);
-	StaticMesh->SetMassOverrideInKg(NAME_None, 20.0f, true);
-	StaticMesh->SetCollisionProfileName("BlockAllDynamic");
-	StaticMesh->SetNotifyRigidBodyCollision(true);
+	Mesh->SetSimulatePhysics(true);
+	Mesh->SetMassOverrideInKg(NAME_None, 20.0f, true);
+	Mesh->SetCollisionProfileName("BlockAllDynamic");
+	Mesh->SetNotifyRigidBodyCollision(true);
 }
 
 void APhysicsHit::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (!StaticMesh)
+	if (!Mesh)
 		return;
 
-	StaticMesh->OnComponentHit.AddDynamic(this, &APhysicsHit::OnHit);
+	Mesh->OnComponentHit.AddDynamic(this, &APhysicsHit::OnHit);
 }
 
 void APhysicsHit::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
@@ -24,10 +24,10 @@ void APhysicsHit::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, U
 	const float HitImpulse = NormalImpulse.Size();
 	if (HitImpulse > 100000.0f)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("HARD HIT!!!: %f"), HitImpulse);
+		Log(FString::Printf(TEXT("HARD HIT!!!: %f"), HitImpulse));
 	}
 	else
 	{
-		// UE_LOG(LogTemp, Warning, TEXT("Soft hit...: %f"), HitImpulse);
+		Log(FString::Printf(TEXT("Soft hit...: %f"), HitImpulse));
 	}
 }

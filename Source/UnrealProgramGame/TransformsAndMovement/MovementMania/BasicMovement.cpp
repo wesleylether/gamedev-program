@@ -1,4 +1,3 @@
-
 #include "BasicMovement.h"
 
 ABasicMovement::ABasicMovement()

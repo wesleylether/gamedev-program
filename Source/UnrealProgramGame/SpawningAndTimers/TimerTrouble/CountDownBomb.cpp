@@ -1,16 +1,14 @@
 #include "CountDownBomb.h"
 
+#include "Enum/EScreenMessageKeys.h"
 #include "Kismet/GameplayStatics.h"
 #include "NiagaraFunctionLibrary.h"
 #include "PhysicsEngine/RadialForceComponent.h"
 
 ACountDownBomb::ACountDownBomb()
 {
-	PrimaryActorTick.bCanEverTick = true;
-
 	ExplosionForce = CreateDefaultSubobject<URadialForceComponent>(TEXT("ExplosionForce"));
-	ExplosionForce->SetupAttachment(RootComp);
-
+	ExplosionForce->SetupAttachment(GetRootComponent());
 	ExplosionForce->Radius = 500.0f;
 	ExplosionForce->ImpulseStrength = 2000.0f;
 	ExplosionForce->bImpulseVelChange = true;
@@ -22,7 +20,11 @@ void ACountDownBomb::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	if (GetWorldTimerManager().IsTimerActive(BombTimer))
-		GEngine->AddOnScreenDebugMessage(13, 1.0f, FColor::Red, FString::Printf(TEXT("Bomb ticking remaining time: %f"), GetWorldTimerManager().GetTimerRemaining(BombTimer)));
+		Message(
+			FString::Printf(TEXT("Bomb ticking remaining time: %f"), GetWorldTimerManager().GetTimerRemaining(BombTimer)),
+			static_cast<int32>(EScreenMessageKey::Counter),
+			1.0f,
+			FColor::Red);
 }
 
 void ACountDownBomb::BeginPlay()
@@ -36,7 +38,7 @@ void ACountDownBomb::BombTimerCallback()
 {
 	GetWorldTimerManager().ClearTimer(BombTimer);
 
-	GEngine->AddOnScreenDebugMessage(14, 5.0f, FColor::Red, FString::Printf(TEXT("BOOM!!!")));
+	Message(FString::Printf(TEXT("BOOM!!!")), static_cast<int32>(EScreenMessageKey::Spawning_Bom), 5.0f, FColor::Red);
 
 	if (BombSound)
 	{

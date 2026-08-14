@@ -1,17 +1,14 @@
 #pragma once
 
+#include "AbstractClasses/BaseMeshActor.h"
 #include "CoreMinimal.h"
-#include "TransformsAndMovement/Base/BaseMovementActor.h"
 
 #include "BasicTimer.generated.h"
 
 UCLASS()
-class UNREALPROGRAMGAME_API ABasicTimer : public ABaseMovementActor
+class UNREALPROGRAMGAME_API ABasicTimer : public ABaseMeshActor
 {
 	GENERATED_BODY()
-
-public:
-	ABasicTimer();
 
 protected:
 	virtual void BeginPlay() override;

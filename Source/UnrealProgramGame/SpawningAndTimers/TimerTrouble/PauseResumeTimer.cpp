@@ -1,30 +1,39 @@
 #include "PauseResumeTimer.h"
 
 #include "Components/BoxComponent.h"
+#include "Enum/EScreenMessageKeys.h"
 
 APauseResumeTimer::APauseResumeTimer()
 {
 	TriggerBox = CreateDefaultSubobject<UBoxComponent>(TEXT("TriggerBox"));
-	TriggerBox->SetupAttachment(RootComp);
+	TriggerBox->SetupAttachment(GetRootComponent());
 }
 
 void APauseResumeTimer::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 
-	GEngine->AddOnScreenDebugMessage(11, 1.0f, FColor::Yellow, FString::Printf(TEXT("Elapsed Time: %f"), GetWorldTimerManager().GetTimerElapsed(TimerHandle)));
-	GEngine->AddOnScreenDebugMessage(12, 1.0f, FColor::Yellow, FString::Printf(TEXT("Is Paused: %s"), bPaused ? TEXT("true") : TEXT("false")));
+	Message(
+		FString::Printf(TEXT("Elapsed Time: %f"), GetWorldTimerManager().GetTimerElapsed(TimerHandle)),
+		static_cast<int32>(EScreenMessageKey::TimerTrouble_ElapsedTime),
+		1.0f,
+		FColor::Yellow);
+	Message(
+		FString::Printf(TEXT("Is Paused: %s"), bPaused ? TEXT("true") : TEXT("false")),
+		static_cast<int32>(EScreenMessageKey::TimerTrouble_Paused),
+		1.0f,
+		FColor::Yellow);
 }
 
 void APauseResumeTimer::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (!StaticMesh)
+	if (!Mesh)
 		return;
 
-	if (StaticMesh->GetMaterial(0))
-		DynamicMaterial = StaticMesh->CreateAndSetMaterialInstanceDynamic(0);
+	if (Mesh->GetMaterial(0))
+		DynamicMaterial = Mesh->CreateAndSetMaterialInstanceDynamic(0);
 
 	TriggerBox->OnComponentBeginOverlap.AddDynamic(this, &APauseResumeTimer::OnOverlapBegin);
 	TriggerBox->OnComponentEndOverlap.AddDynamic(this, &APauseResumeTimer::OnOverlapEnd);

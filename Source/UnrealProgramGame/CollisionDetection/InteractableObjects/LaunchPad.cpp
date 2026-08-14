@@ -11,10 +11,10 @@ void ALaunchPad::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (!StaticMesh)
+	if (!Mesh)
 		return;
 
-	StaticMesh->OnComponentHit.AddDynamic(this, &ALaunchPad::OnHit);
+	Mesh->OnComponentHit.AddDynamic(this, &ALaunchPad::OnHit);
 }
 
 void ALaunchPad::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)

@@ -1,7 +1,7 @@
 #pragma once
 
+#include "AbstractClasses/BaseMeshActor.h"
 #include "CoreMinimal.h"
-#include "TransformsAndMovement/Base/BaseMovementActor.h"
 
 #include "CountDownBomb.generated.h"
 
@@ -9,7 +9,7 @@ class URadialForceComponent;
 class UNiagaraSystem;
 
 UCLASS()
-class UNREALPROGRAMGAME_API ACountDownBomb : public ABaseMovementActor
+class UNREALPROGRAMGAME_API ACountDownBomb : public ABaseMeshActor
 {
 	GENERATED_BODY()
 
@@ -28,7 +28,7 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TObjectPtr<UNiagaraSystem> BombEffect;
-	
+
 	UPROPERTY(VisibleAnywhere)
 	URadialForceComponent* ExplosionForce;
 

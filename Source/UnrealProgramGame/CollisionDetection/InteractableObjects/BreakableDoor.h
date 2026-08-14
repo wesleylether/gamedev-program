@@ -1,14 +1,14 @@
 #pragma once
 
+#include "AbstractClasses/BaseMeshActor.h"
 #include "CoreMinimal.h"
-#include "GameFramework/Actor.h"
 
 #include "BreakableDoor.generated.h"
 
 class UBoxComponent;
 
 UCLASS()
-class UNREALPROGRAMGAME_API ABreakableDoor : public AActor
+class UNREALPROGRAMGAME_API ABreakableDoor : public ABaseMeshActor
 {
 	GENERATED_BODY()
 
@@ -17,12 +17,6 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	TObjectPtr<USceneComponent> SceneRootComponent;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	TObjectPtr<UStaticMeshComponent> StaticMeshComponent;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TObjectPtr<UStaticMeshComponent> DoorMeshComponent;

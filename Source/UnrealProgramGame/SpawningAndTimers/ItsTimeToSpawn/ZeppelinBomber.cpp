@@ -9,7 +9,7 @@ AZeppelinBomber::AZeppelinBomber()
 	PrimaryActorTick.bCanEverTick = true;
 
 	SpawnPoint = CreateDefaultSubobject<UArrowComponent>(TEXT("SpawnPoint"));
-	SpawnPoint->SetupAttachment(SceneRoot);
+	SpawnPoint->SetupAttachment(GetRootComponent());
 }
 
 void AZeppelinBomber::Tick(float DeltaTime)
@@ -62,6 +62,6 @@ void AZeppelinBomber::SpawnBomb()
 	ACannonBall* SpawnedBomb = GetWorld()->SpawnActor<ACannonBall>(Bomb, SpawnLocation, SpawnRotation, SpawnParams);
 	if (!SpawnedBomb)
 	{
-		UE_LOG(LogTemp, Error, TEXT("Failed to spawn bomb in %s"), *GetName());
+		Log(FString::Printf(TEXT("Failed to spawn bomb in %s"), *GetName()));
 	}
 }

@@ -1,7 +1,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "TransformsAndMovement/Base/BaseMovementActor.h"
+#include "AbstractClasses/BaseMovementActor.h"
+
 
 #include "HitEventHappens.generated.h"
 
@@ -9,9 +10,6 @@ UCLASS()
 class UNREALPROGRAMGAME_API AHitEventHappens : public ABaseMovementActor
 {
 	GENERATED_BODY()
-
-public:
-	AHitEventHappens();
 
 protected:
 	virtual void BeginPlay() override;

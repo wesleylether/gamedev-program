@@ -1,14 +1,14 @@
 #pragma once
 
+#include "AbstractClasses/BaseActor.h"
 #include "CoreMinimal.h"
-#include "GameFramework/Actor.h"
 
 #include "MudZone.generated.h"
 
 class UBoxComponent;
 
 UCLASS()
-class UNREALPROGRAMGAME_API AMudZone : public AActor
+class UNREALPROGRAMGAME_API AMudZone : public ABaseActor
 {
 	GENERATED_BODY()
 
@@ -18,9 +18,6 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	TObjectPtr<USceneComponent> SceneRootComponent;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TObjectPtr<UBoxComponent> BoxComponent;
 
@@ -29,7 +26,7 @@ protected:
 
 	UFUNCTION()
 	void OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-	
+
 	UFUNCTION()
 	void OnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 };

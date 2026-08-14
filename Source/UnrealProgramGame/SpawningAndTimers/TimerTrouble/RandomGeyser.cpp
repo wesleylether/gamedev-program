@@ -9,10 +9,8 @@
 
 ARandomGeyser::ARandomGeyser()
 {
-	PrimaryActorTick.bCanEverTick = false;
-
 	SphereComp = CreateDefaultSubobject<USphereComponent>(TEXT("SphereComp"));
-	SphereComp->SetupAttachment(RootComp);
+	SphereComp->SetupAttachment(GetRootComponent());
 }
 
 void ARandomGeyser::BeginPlay()
