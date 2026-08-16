@@ -1,13 +1,13 @@
-#include "FirstTrace.h"
+#include "SelectiveVision.h"
 
 #include "Enum/EScreenMessageKeys.h"
 
-AFirstTrace::AFirstTrace()
+ASelectiveVision::ASelectiveVision()
 {
 	PrimaryActorTick.bCanEverTick = true;
 }
 
-void AFirstTrace::Tick(float DeltaTime)
+void ASelectiveVision::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
@@ -20,8 +20,6 @@ void AFirstTrace::Tick(float DeltaTime)
 	if (bHit)
 	{
 		LineColor = FColor::Green;
-
-		Message(FString::Printf(TEXT("Hit %s"), *HitResult.GetActor()->GetName()), static_cast<int32>(EScreenMessageKey::Trace_FirstTrace), 1.0f, LineColor);
 
 		DrawDebugSphere(GetWorld(), HitResult.Location, 10.0f, 10, FColor::Yellow, false, 0.0f, 0, 1.0f);
 	}
