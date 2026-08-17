@@ -42,4 +42,10 @@ enum class EScreenMessageKey : uint8
 	Trace_StopHittingYourself UMETA(DisplayName = "System: Trace Stop Hitting Yourself"),
 	Trace_XRayTrace UMETA(DisplayName = "System: Trace X-Ray Trace"),
 	Trace_Sentry UMETA(DisplayName = "System: Trace Sentry"),
+
+	// Sweep Squad
+	SweepHit UMETA(DisplayName = "System: Sweep Hit"),
+	LineHit UMETA(DisplayName = "System: Line Hit"),
+	Sweep_Multi UMETA(DisplayName = "System: Sweep Multi"),
+	Sweep_AreaScanner UMETA(DisplayName = "System: Sweep Area Scanner"),
 };

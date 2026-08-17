@@ -3,19 +3,21 @@
 #include "AbstractClasses/BaseActor.h"
 #include "CoreMinimal.h"
 
-#include "XRayTrace.generated.h"
+#include "FirstSweep.generated.h"
 
 UCLASS()
-class UNREALPROGRAMGAME_API AXRayTrace : public ABaseActor
+class UNREALPROGRAMGAME_API AFirstSweep : public ABaseActor
 {
 	GENERATED_BODY()
 
 public:
-	AXRayTrace();
+	AFirstSweep();
 
 	virtual void Tick(float DeltaTime) override;
 
 protected:
+	virtual void BeginPlay() override;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float TraceLength = 1000.0f;
+	float SweepDistance = 1000.0f;
 };
