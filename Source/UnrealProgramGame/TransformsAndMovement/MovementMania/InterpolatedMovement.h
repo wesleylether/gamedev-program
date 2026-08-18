@@ -20,10 +20,10 @@ protected:
 	virtual void BeginPlay() override;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	AActor* StartActor;
+	TObjectPtr<AActor> StartActor;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	AActor* EndActor;
+	TObjectPtr<AActor> EndActor;
 
 private:
 	bool bMovingToEnd = true;

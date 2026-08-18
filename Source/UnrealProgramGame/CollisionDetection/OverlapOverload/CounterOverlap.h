@@ -18,5 +18,5 @@ protected:
 	virtual void HandleBoxComponentEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex) override;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	TArray<AActor*> OverlappedActors;
+	TArray<TObjectPtr<AActor>> OverlappedActors;
 };

@@ -20,7 +20,7 @@ protected:
 	virtual void BeginPlay() override;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	ATargetPoint* TargetActor;
+	TObjectPtr<ATargetPoint> TargetActor;
 
 	FVector StartLocation;
 	FVector EndLocation;

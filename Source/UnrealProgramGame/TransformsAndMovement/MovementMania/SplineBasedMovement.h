@@ -20,10 +20,10 @@ protected:
 	virtual void BeginPlay() override;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	AActor* SplineActor;
+	TObjectPtr<AActor> SplineActor;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	USplineComponent* SplineComponent;
+	TObjectPtr<USplineComponent> SplineComponent;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool bShouldLoop = true;

@@ -29,11 +29,11 @@ public:
 protected:
 	/** Input Mapping Contexts */
 	UPROPERTY(EditAnywhere, Category = "Input|Input Mappings")
-	TArray<UInputMappingContext*> DefaultMappingContexts;
+	TArray<TObjectPtr<UInputMappingContext>> DefaultMappingContexts;
 
 	/** Input Mapping Contexts */
 	UPROPERTY(EditAnywhere, Category = "Input|Input Mappings")
-	TArray<UInputMappingContext*> MobileExcludedMappingContexts;
+	TArray<TObjectPtr<UInputMappingContext>> MobileExcludedMappingContexts;
 
 	/** Mobile controls widget to spawn */
 	UPROPERTY(EditAnywhere, Category = "Input|Touch Controls")
@@ -61,5 +61,5 @@ protected:
 
 private:
 	UPROPERTY()
-	UMyMainDashboard* MainDashboardWidget;
+	TObjectPtr<UMyMainDashboard> MainDashboardWidget;
 };

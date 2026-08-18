@@ -21,5 +21,5 @@ public:
 
 protected:
 	UPROPERTY(meta = (BindWidget))
-	UProgressBar* StaminaBar;
+	TObjectPtr<UProgressBar> StaminaBar;
 };

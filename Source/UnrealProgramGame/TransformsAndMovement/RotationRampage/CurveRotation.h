@@ -17,7 +17,7 @@ protected:
 	virtual void BeginPlay() override;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CurveRotation")
-	UCurveFloat* CurveFloat;
+	TObjectPtr<UCurveFloat> CurveFloat;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "CurveRotation")
 	float CurveLength;

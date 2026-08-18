@@ -30,7 +30,7 @@ protected:
 	TObjectPtr<UNiagaraSystem> BombEffect;
 
 	UPROPERTY(VisibleAnywhere)
-	URadialForceComponent* ExplosionForce;
+	TObjectPtr<URadialForceComponent> ExplosionForce;
 
 private:
 	FTimerHandle BombTimer;

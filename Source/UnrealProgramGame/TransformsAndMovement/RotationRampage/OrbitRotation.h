@@ -18,5 +18,5 @@ protected:
 	virtual void BeginPlay() override;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	UStaticMeshComponent* SecondStaticMesh;
+	TObjectPtr<UStaticMeshComponent> SecondStaticMesh;
 };

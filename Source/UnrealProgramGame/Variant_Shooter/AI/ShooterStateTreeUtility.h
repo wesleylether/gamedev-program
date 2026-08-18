@@ -22,11 +22,11 @@ struct FStateTreeLineOfSightToTargetConditionInstanceData
 	
 	/** Targeting character */
 	UPROPERTY(EditAnywhere, Category = "Context")
-	AShooterNPC* Character;
+	TObjectPtr<AShooterNPC> Character;
 
 	/** Target to check line of sight for */
 	UPROPERTY(EditAnywhere, Category = "Condition")
-	AActor* Target;
+	TObjectPtr<AActor> Target;
 
 	/** Max allowed line of sight cone angle, in degrees */
 	UPROPERTY(EditAnywhere, Category = "Condition")
