@@ -1,10 +1,12 @@
 #include "CoinPickup.h"
 
+#include "AbilitySystem/FGameplayTags.h"
 #include "Components/SceneComponent.h"
 #include "Components/SphereComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "NiagaraFunctionLibrary.h"
+#include "UnrealProgramGameCustomCollision.h"
 
 ACoinPickup::ACoinPickup()
 {
@@ -19,7 +21,12 @@ ACoinPickup::ACoinPickup()
 
 	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComponent"));
 	MeshComponent->SetupAttachment(SphereComponent);
-	MeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	MeshComponent->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	MeshComponent->SetCollisionObjectType(ECC_WorldDynamic);
+	MeshComponent->SetCollisionResponseToAllChannels(ECR_Ignore);
+	MeshComponent->SetCollisionResponseToChannel(ECC_Interact, ECR_Block);
+
+	GameplayTags.AddTag(GTag::Interactable::Pickup);
 
 	PrimaryActorTick.bCanEverTick = true;
 }
@@ -52,6 +59,13 @@ void ACoinPickup::Tick(float DeltaTime)
 	UpdateIdleAnimation(DeltaTime);
 }
 
+void ACoinPickup::Interact_Implementation(APawn* InteractingPawn)
+{
+	CoinPickup();
+
+	Message(FString::Printf(TEXT("Coin picked up by %s"), *InteractingPawn->GetName()));
+}
+
 void ACoinPickup::HandleSphereComponentBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
@@ -60,6 +74,11 @@ void ACoinPickup::HandleSphereComponentBeginOverlap(UPrimitiveComponent* Overlap
 		return;
 	}
 
+	CoinPickup();
+}
+
+void ACoinPickup::CoinPickup()
+{
 	bIsPickupInProgress = true;
 	PickupAnimationElapsedTime = 0.0f;
 

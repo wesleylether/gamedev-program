@@ -18,7 +18,7 @@ protected:
 	virtual void BeginPlay() override;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Follow The Leader")
-	AActor* LeaderActor;
+	TObjectPtr<AActor> LeaderActor;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Follow The Leader")
 	float MaxDistance = 200.0f;

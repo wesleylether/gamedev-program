@@ -1,7 +1,7 @@
 #pragma once
 
-#include "CoreMinimal.h"
 #include "AbstractClasses/BaseOverlapActor.h"
+#include "CoreMinimal.h"
 
 #include "CounterOverlap.generated.h"
 
@@ -9,7 +9,7 @@ UCLASS()
 class UNREALPROGRAMGAME_API ACounterOverlap : public ABaseOverlapActor
 {
 	GENERATED_BODY()
-	
+
 public:
 	ACounterOverlap();
 

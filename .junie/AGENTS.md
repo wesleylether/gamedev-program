@@ -27,6 +27,13 @@ When generating or modifying `.h` files, strictly follow this structure:
 
 # 4. Memory Management & Safety
 - **TObjectPtr:** Use `TObjectPtr<T>` instead of raw pointers (`T*`) for `UPROPERTY` object references in headers (UE5 standard).
+```cpp
+UPROPERTY(EditAnywhere, Category = "Components")
+TObjectPtr<UStaticMeshComponent> MeshComponent;
+
+UPROPERTY(EditAnywhere, Category = "Components")
+TArray<TObjectPtr<AActor>> AttachedActors;
+```
 - **Garbage Collection:** Any UObject pointer that needs to be kept alive must be marked with `UPROPERTY()`.
 - **Validation:** Always check pointers before use using `if (MyPointer)` or `if (IsValid(MyObject))`. Never assume a pointer is valid.
 

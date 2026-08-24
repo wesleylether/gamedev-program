@@ -17,6 +17,7 @@
 #include "Enum/EScreenMessageKeys.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "InputActionValue.h"
+#include "LineAndShapeTracing/LookAndInteract/LookAndInteract.h"
 #include "TimerManager.h"
 #include "UnrealProgramGame.h"
 #include "UnrealProgramGamePlayerController.h"
@@ -65,6 +66,9 @@ AUnrealProgramGameCharacter::AUnrealProgramGameCharacter()
 
 	AbilitySystemComponent = CreateDefaultSubobject<UAbilitySystemComponent>(TEXT("AbilitySystemComponent"));
 	AttributeSet = CreateDefaultSubobject<UPlayerAttributeSet>(TEXT("AttributeSet"));
+
+	// Configure Interaction Component
+	LookAndInteract = CreateDefaultSubobject<ULookAndInteract>(TEXT("LookAndInteract"));
 
 	PrimaryActorTick.bCanEverTick = true;
 
@@ -153,6 +157,9 @@ void AUnrealProgramGameCharacter::SetupPlayerInputComponent(UInputComponent* Pla
 		EnhancedInputComponent->BindAction(TriggerQualifierAction, ETriggerEvent::Canceled, this, &AUnrealProgramGameCharacter::TriggerQualifierCanceled);
 		EnhancedInputComponent->BindAction(TriggerQualifierAction, ETriggerEvent::Triggered, this, &AUnrealProgramGameCharacter::TriggerQualifierTriggered);
 		EnhancedInputComponent->BindAction(TriggerQualifierAction, ETriggerEvent::Ongoing, this, &AUnrealProgramGameCharacter::TriggerQualifierOngoing);
+
+		// Look And Interact
+		LookAndInteract->InitializePlayerInput(PlayerInputComponent);
 	}
 	else
 	{

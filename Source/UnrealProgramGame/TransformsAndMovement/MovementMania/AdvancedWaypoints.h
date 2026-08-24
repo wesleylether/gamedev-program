@@ -19,10 +19,10 @@ protected:
 	virtual void BeginPlay() override;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Waypoints")
-	TArray<AActor*> Waypoints;
+	TArray<TObjectPtr<AActor>> Waypoints;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	AActor* CurrentWaypoint;
+	TObjectPtr<AActor> CurrentWaypoint;
 
 	int CurrentWaypointIndex = 0;
 };

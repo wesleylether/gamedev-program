@@ -2,20 +2,26 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "GameplayTagAssetInterface.h"
 
 #include "BaseActor.generated.h"
 
 UCLASS()
-class UNREALPROGRAMGAME_API ABaseActor : public AActor
+class UNREALPROGRAMGAME_API ABaseActor : public AActor, public IGameplayTagAssetInterface
 {
 	GENERATED_BODY()
 
 public:
 	ABaseActor();
 
+	virtual void GetOwnedGameplayTags(FGameplayTagContainer& TagContainer) const override;
+
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Debug")
 	bool bDebug = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GameplayTags")
+	FGameplayTagContainer GameplayTags;
 
 	bool DebugEnabled() const { return bDebug; }
 

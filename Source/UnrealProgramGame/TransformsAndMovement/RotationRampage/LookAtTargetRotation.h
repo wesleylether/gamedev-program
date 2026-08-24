@@ -17,7 +17,7 @@ protected:
 	virtual void BeginPlay() override;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Rotation")
-	AActor* TargetActor;
+	TObjectPtr<AActor> TargetActor;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Rotation")
 	float InterpolationSpeed = 4.0f;

@@ -1,16 +1,17 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
-
 #pragma once
 
 #include "AbilitySystemInterface.h"
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
-#include "GameplayTagContainer.h"
 #include "InputAction.h"
 #include "Logging/LogMacros.h"
+#include "UnrealProgramGamePlayerController.h"
+
 #include "UnrealProgramGameCharacter.generated.h"
 
-// Forward Declarations
+class AUnrealProgramGamePlayerController;
+class UMyMainDashboard;
+class ULookAndInteract;
 class UGameplayAbility;
 class UGameplayEffect;
 class UPlayerAttributeSet;
@@ -68,6 +69,15 @@ public:
 
 	USoundBase* GetChargedJumpSound() const { return ChargedJumpSound; }
 
+	TObjectPtr<UMyMainDashboard> GetMainDashboard() const
+	{
+		const AUnrealProgramGamePlayerController* Controller = Cast<AUnrealProgramGamePlayerController>(GetController());
+		if (!Controller)
+			return nullptr;
+
+		return Controller->GetMainDashboard();
+	}
+
 protected:
 	// -------------------------------------------------------------------------
 	// Engine Overrides
@@ -81,17 +91,21 @@ protected:
 	// -------------------------------------------------------------------------
 	/** Pawn mesh: first person view (arms; seen only by self) */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
-	USkeletalMeshComponent* FirstPersonMesh;
+	TObjectPtr<USkeletalMeshComponent> FirstPersonMesh;
 
 	/** First person camera */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
-	UCameraComponent* FirstPersonCameraComponent;
+	TObjectPtr<UCameraComponent> FirstPersonCameraComponent;
+
+	/** Interaction Component */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<ULookAndInteract> LookAndInteract;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
-	UAbilitySystemComponent* AbilitySystemComponent;
+	TObjectPtr<UAbilitySystemComponent> AbilitySystemComponent;
 
 	UPROPERTY()
-	UPlayerAttributeSet* AttributeSet;
+	TObjectPtr<UPlayerAttributeSet> AttributeSet;
 
 	// -------------------------------------------------------------------------
 	// Gameplay Ability System (GAS)
@@ -108,38 +122,38 @@ protected:
 	// Input Actions (Properties)
 	// -------------------------------------------------------------------------
 	UPROPERTY(EditAnywhere, Category = "Input|Movement")
-	UInputAction* MoveAction;
+	TObjectPtr<UInputAction> MoveAction;
 	UPROPERTY(EditAnywhere, Category = "Input|Movement")
-	UInputAction* WalkAction;
+	TObjectPtr<UInputAction> WalkAction;
 	UPROPERTY(EditAnywhere, Category = "Input|Movement")
-	UInputAction* RunAction;
+	TObjectPtr<UInputAction> RunAction;
 	UPROPERTY(EditAnywhere, Category = "Input|Movement")
-	UInputAction* CrouchAction;
+	TObjectPtr<UInputAction> CrouchAction;
 	UPROPERTY(EditAnywhere, Category = "Input|Movement")
-	UInputAction* JumpAction;
+	TObjectPtr<UInputAction> JumpAction;
 	UPROPERTY(EditAnywhere, Category = "Input|Movement")
-	UInputAction* ChargedJumpAction;
+	TObjectPtr<UInputAction> ChargedJumpAction;
 	UPROPERTY(EditAnywhere, Category = "Input|Movement")
-	UInputAction* DashedAction;
+	TObjectPtr<UInputAction> DashedAction;
 	UPROPERTY(EditAnywhere, Category = "Input|Movement")
-	UInputAction* FlyModeAction;
+	TObjectPtr<UInputAction> FlyModeAction;
 
 	UPROPERTY(EditAnywhere, Category = "Input|Camera")
-	UInputAction* LookAction;
+	TObjectPtr<UInputAction> LookAction;
 	UPROPERTY(EditAnywhere, Category = "Input|Camera")
-	UInputAction* MouseLookAction;
+	TObjectPtr<UInputAction> MouseLookAction;
 	UPROPERTY(EditAnywhere, Category = "Input|Camera")
-	UInputAction* RotateAction; // Rotate with Q en E Module 1-2.1
+	TObjectPtr<UInputAction> RotateAction; // Rotate with Z en X Module 1-2.1
 
 	UPROPERTY(EditAnywhere, Category = "Input|Aiming")
-	UInputAction* TriggerAimAction; // Slow Aim Module 1-2.2
+	TObjectPtr<UInputAction> TriggerAimAction; // Slow Aim Module 1-2.2
 	UPROPERTY(EditAnywhere, Category = "Input|Aiming")
-	UInputAction* TriggerInvertAction; // Slow Aim Module 1-2.3
+	TObjectPtr<UInputAction> TriggerInvertAction; // Slow Aim Module 1-2.3
 
 	UPROPERTY(EditAnywhere, Category = "Input|Testing")
-	UInputAction* TriggerStateTestAction; // Trigger State Tests Module 1-1
+	TObjectPtr<UInputAction> TriggerStateTestAction; // Trigger State Tests Module 1-1
 	UPROPERTY(EditAnywhere, Category = "Input|Testing")
-	UInputAction* TriggerQualifierAction; // Trigger Qualifiers
+	TObjectPtr<UInputAction> TriggerQualifierAction; // Trigger Qualifiers
 
 	// -------------------------------------------------------------------------
 	// Character Stats & Configuration
@@ -168,9 +182,9 @@ protected:
 	float ChargedJumpStaminaCost = 20.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Audio")
-	USoundBase* DashSound;
+	TObjectPtr<USoundBase> DashSound;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Audio")
-	USoundBase* ChargedJumpSound;
+	TObjectPtr<USoundBase> ChargedJumpSound;
 
 	// -------------------------------------------------------------------------
 	// Input Handling Functions
@@ -236,6 +250,6 @@ private:
 	FVector TargetCameraRelativeLocation;
 
 	FTimerHandle DashTimerHandle;
-	FVector2D	 LastDashInput2D;
-	FVector2D	 PreviousDashInput2D;
+	FVector2D LastDashInput2D;
+	FVector2D PreviousDashInput2D;
 };

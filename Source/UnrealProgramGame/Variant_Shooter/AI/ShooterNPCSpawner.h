@@ -20,10 +20,10 @@ class UNREALPROGRAMGAME_API AShooterNPCSpawner : public AActor
 	GENERATED_BODY()
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components", meta = (AllowPrivateAccess = "true"))
-	UCapsuleComponent* SpawnCapsule;
+	TObjectPtr<UCapsuleComponent> SpawnCapsule;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
-	UArrowComponent* SpawnDirection;
+	TObjectPtr<UArrowComponent> SpawnDirection;
 
 protected:
 

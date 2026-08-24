@@ -17,7 +17,6 @@ namespace GTag
 	namespace Effect
 	{
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(StaminaCost, "GTags.Abilities.Effect.StaminaCost", "Tag for stamina cost effect")
-
 	} // namespace Effect
 
 	namespace State
@@ -28,6 +27,12 @@ namespace GTag
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(Jumping, "GTags.State.Jumping", "Tag for jumping state")
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(Exhausted, "GTags.State.Exhausted", "Tag for exhausted state")
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(InMud, "GTags.State.InMud", "Tag for in mud state")
-
 	} // namespace State
+
+	namespace Interactable
+	{
+		UE_DEFINE_GAMEPLAY_TAG_COMMENT(Any, "GTags.Interactable", "Tag for all interactable tags")
+		UE_DEFINE_GAMEPLAY_TAG_COMMENT(Pickup, "GTags.Interactable.Pickup", "Tag for interactable object to Pickup")
+		UE_DEFINE_GAMEPLAY_TAG_COMMENT(Push, "GTags.Interactable.Push", "Tag for interactable object to Push")
+	} // namespace Interactable
 } // namespace GTag

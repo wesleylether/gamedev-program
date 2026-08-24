@@ -17,7 +17,7 @@ protected:
 	virtual void BeginPlay() override;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Scale Supreme")
-	UCurveFloat* CurveScale;
+	TObjectPtr<UCurveFloat> CurveScale;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Scale Supreme")
 	float MaxScale = 3.0f;
