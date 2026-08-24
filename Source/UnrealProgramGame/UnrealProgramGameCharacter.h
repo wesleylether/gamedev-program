@@ -1,16 +1,17 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
-
 #pragma once
 
 #include "AbilitySystemInterface.h"
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
-#include "GameplayTagContainer.h"
 #include "InputAction.h"
 #include "Logging/LogMacros.h"
+#include "UnrealProgramGamePlayerController.h"
+
 #include "UnrealProgramGameCharacter.generated.h"
 
-// Forward Declarations
+class AUnrealProgramGamePlayerController;
+class UMyMainDashboard;
+class ULookAndInteract;
 class UGameplayAbility;
 class UGameplayEffect;
 class UPlayerAttributeSet;
@@ -68,6 +69,15 @@ public:
 
 	USoundBase* GetChargedJumpSound() const { return ChargedJumpSound; }
 
+	TObjectPtr<UMyMainDashboard> GetMainDashboard() const
+	{
+		const AUnrealProgramGamePlayerController* Controller = Cast<AUnrealProgramGamePlayerController>(GetController());
+		if (!Controller)
+			return nullptr;
+
+		return Controller->GetMainDashboard();
+	}
+
 protected:
 	// -------------------------------------------------------------------------
 	// Engine Overrides
@@ -86,6 +96,10 @@ protected:
 	/** First person camera */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UCameraComponent> FirstPersonCameraComponent;
+
+	/** Interaction Component */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<ULookAndInteract> LookAndInteract;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UAbilitySystemComponent> AbilitySystemComponent;

@@ -31,4 +31,11 @@ namespace GTag
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(InMud);
 	} // namespace State
 
+	namespace Interactable
+	{
+		UE_DECLARE_GAMEPLAY_TAG_EXTERN(Any);
+		UE_DECLARE_GAMEPLAY_TAG_EXTERN(Pickup);
+		UE_DECLARE_GAMEPLAY_TAG_EXTERN(Push);
+	} // namespace Interactable
+
 } // namespace GTag

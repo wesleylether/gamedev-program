@@ -26,6 +26,8 @@ public:
 
 	void UpdateStamina(float Percentage);
 
+	TObjectPtr<UMyMainDashboard> GetMainDashboard() const { return MainDashboardWidget; }
+
 protected:
 	/** Input Mapping Contexts */
 	UPROPERTY(EditAnywhere, Category = "Input|Input Mappings")

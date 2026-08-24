@@ -5,6 +5,11 @@ ABaseActor::ABaseActor()
 	PrimaryActorTick.bCanEverTick = false;
 }
 
+void ABaseActor::GetOwnedGameplayTags(FGameplayTagContainer& TagContainer) const
+{
+	TagContainer = GameplayTags;
+}
+
 void ABaseActor::Log(const FString& Message, const ELogVerbosity::Type Verbosity) const
 {
 	if (!bDebug)

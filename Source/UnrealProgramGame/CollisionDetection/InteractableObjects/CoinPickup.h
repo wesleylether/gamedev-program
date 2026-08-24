@@ -2,6 +2,7 @@
 
 #include "AbstractClasses/BaseActor.h"
 #include "CoreMinimal.h"
+#include "LineAndShapeTracing/LookAndInteract/Interactable.h"
 
 #include "CoinPickup.generated.h"
 
@@ -12,7 +13,7 @@ class USphereComponent;
 class UStaticMeshComponent;
 
 UCLASS()
-class UNREALPROGRAMGAME_API ACoinPickup : public ABaseActor
+class UNREALPROGRAMGAME_API ACoinPickup : public ABaseActor, public IInteractable
 {
 	GENERATED_BODY()
 
@@ -20,6 +21,8 @@ public:
 	ACoinPickup();
 
 	virtual void Tick(float DeltaTime) override;
+
+	virtual void Interact_Implementation(APawn* InteractingPawn) override;
 
 protected:
 	virtual void BeginPlay() override;
@@ -62,6 +65,7 @@ protected:
 		int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 private:
+	void CoinPickup();
 	void UpdateIdleAnimation(float DeltaTime);
 	void UpdatePickupAnimation(float DeltaTime);
 	static float EaseOutBack(float Alpha, float Overshoot);
