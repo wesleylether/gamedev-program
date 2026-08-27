@@ -26,5 +26,5 @@ protected:
 	bool DebugEnabled() const { return bDebug; }
 
 	void Log(const FString& Message, const ELogVerbosity::Type Verbosity = ELogVerbosity::Warning) const;
-	void Message(const FString& Message, const int32 Key = -1, const float TimeToDisplay = 1.5f, const FColor Color = FColor::Green) const;
+	void Message(const FString& Message, const int32 Key = -1, const float TimeToDisplay = 3.0f, const FColor Color = FColor::Green) const;
 };
