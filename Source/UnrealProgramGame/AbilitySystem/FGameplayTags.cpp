@@ -34,5 +34,12 @@ namespace GTag
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(Any, "GTags.Interactable", "Tag for all interactable tags")
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(Pickup, "GTags.Interactable.Pickup", "Tag for interactable object to Pickup")
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(Push, "GTags.Interactable.Push", "Tag for interactable object to Push")
+		UE_DEFINE_GAMEPLAY_TAG_COMMENT(Interact, "GTags.Interactable.Interact", "Tag for interactable object to Interact")
 	} // namespace Interactable
+
+	namespace Quests
+	{
+		UE_DEFINE_GAMEPLAY_TAG_COMMENT(Quest_1, "GTags.Quests.Quest_1", "Tag for quest 1")
+		UE_DEFINE_GAMEPLAY_TAG_COMMENT(Quest_2, "GTags.Quests.Quest_2", "Tag for quest 2")
+	} // namespace Quests
 } // namespace GTag

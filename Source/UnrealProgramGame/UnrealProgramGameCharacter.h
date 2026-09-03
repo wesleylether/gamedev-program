@@ -78,6 +78,15 @@ public:
 		return Controller->GetMainDashboard();
 	}
 
+	TObjectPtr<UQuestHUD> GetQuestHUD() const
+	{
+		const AUnrealProgramGamePlayerController* Controller = Cast<AUnrealProgramGamePlayerController>(GetController());
+		if (!Controller)
+			return nullptr;
+
+		return Controller->GetQuestHUD();
+	}
+
 protected:
 	// -------------------------------------------------------------------------
 	// Engine Overrides

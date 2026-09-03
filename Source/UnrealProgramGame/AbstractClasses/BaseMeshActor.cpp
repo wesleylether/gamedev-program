@@ -8,5 +8,5 @@ ABaseMeshActor::ABaseMeshActor()
 	SetRootComponent(SceneRoot);
 
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
-	Mesh->SetupAttachment(SceneRoot);
+	Mesh->SetupAttachment(GetRootComponent());
 }

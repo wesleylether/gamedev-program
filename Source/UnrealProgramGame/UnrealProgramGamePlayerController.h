@@ -2,10 +2,15 @@
 
 #pragma once
 
+#include "6-Delegates/3-EventDrivenGameplay/Quest/QuestHUD.h"
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
 #include "UnrealProgramGamePlayerController.generated.h"
 
+enum class EQuestTriggerState : uint8;
+struct FGameplayTag;
+class UQuestEventSubsystem;
+class UQuestHUD;
 class UMyMainDashboard;
 class UInputMappingContext;
 class UUserWidget;
@@ -27,6 +32,8 @@ public:
 	void UpdateStamina(float Percentage);
 
 	TObjectPtr<UMyMainDashboard> GetMainDashboard() const { return MainDashboardWidget; }
+
+	TObjectPtr<UQuestHUD> GetQuestHUD() const { return QuestHUDWidget; }
 
 protected:
 	/** Input Mapping Contexts */
@@ -52,6 +59,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
 	TSubclassOf<UMyMainDashboard> MainDashboardClass;
 
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	TSubclassOf<UQuestHUD> QuestHUDClass;
+
 	/** Gameplay initialization */
 	virtual void BeginPlay() override;
 
@@ -61,7 +71,19 @@ protected:
 	/** Returns true if the player should use UMG touch controls */
 	bool ShouldUseTouchControls() const;
 
+	UFUNCTION()
+	void OnQuestEvent(FGameplayTag Tag, EQuestTriggerState State, int32 ItemsTotal, AActor* EventInstigator);
+
+	UFUNCTION()
+	void OnQuestItemCollected(FGameplayTag Tag, int32 ItemsCollected, int32 ItemsTotal);
+
 private:
 	UPROPERTY()
 	TObjectPtr<UMyMainDashboard> MainDashboardWidget;
+
+	UPROPERTY()
+	TObjectPtr<UQuestHUD> QuestHUDWidget;
+
+	UPROPERTY()
+	TObjectPtr<UQuestEventSubsystem> QuestEventSubsystem;
 };

@@ -1,6 +1,7 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "UnrealProgramGameCharacter.h"
+#include "5-LineAndShapeTracing/3-LookAndInteract/LookAndInteract.h"
 #include "AbilitySystem/Abilities/ChargedJumpAbility.h"
 #include "AbilitySystem/Abilities/DashAbility.h"
 #include "AbilitySystem/Abilities/FlyAbility.h"
@@ -17,7 +18,6 @@
 #include "Enum/EScreenMessageKeys.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "InputActionValue.h"
-#include "LineAndShapeTracing/LookAndInteract/LookAndInteract.h"
 #include "TimerManager.h"
 #include "UnrealProgramGame.h"
 #include "UnrealProgramGamePlayerController.h"

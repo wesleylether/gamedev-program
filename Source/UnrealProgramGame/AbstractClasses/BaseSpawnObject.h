@@ -1,8 +1,8 @@
 #pragma once
 
+#include "5-LineAndShapeTracing/3-LookAndInteract/Interactable.h"
 #include "AbstractClasses/BaseMeshActor.h"
 #include "CoreMinimal.h"
-#include "LineAndShapeTracing/LookAndInteract/Interactable.h"
 
 #include "BaseSpawnObject.generated.h"
 
@@ -13,7 +13,7 @@ class UNREALPROGRAMGAME_API ABaseSpawnObject : public ABaseMeshActor, public IIn
 
 public:
 	ABaseSpawnObject();
-	
+
 	virtual void Interact_Implementation(APawn* InteractingPawn) override;
 
 	UFUNCTION(BlueprintCallable, Category = "Mesh")
