@@ -61,7 +61,7 @@ void ACoinPickup::Tick(float DeltaTime)
 
 void ACoinPickup::Interact_Implementation(APawn* InteractingPawn)
 {
-	CoinPickup();
+	CoinPickup(InteractingPawn);
 
 	Message(FString::Printf(TEXT("Coin picked up by %s"), *InteractingPawn->GetName()));
 }
@@ -74,11 +74,12 @@ void ACoinPickup::HandleSphereComponentBeginOverlap(UPrimitiveComponent* Overlap
 		return;
 	}
 
-	CoinPickup();
+	CoinPickup(OtherActor);
 }
 
-void ACoinPickup::CoinPickup()
+void ACoinPickup::CoinPickup(AActor* Collector)
 {
+	bIsCollected = true;
 	bIsPickupInProgress = true;
 	PickupAnimationElapsedTime = 0.0f;
 

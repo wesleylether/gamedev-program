@@ -36,6 +36,13 @@ namespace GTag
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(Any);
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(Pickup);
 		UE_DECLARE_GAMEPLAY_TAG_EXTERN(Push);
+		UE_DECLARE_GAMEPLAY_TAG_EXTERN(Interact);
 	} // namespace Interactable
+
+	namespace Quests
+	{
+		UE_DECLARE_GAMEPLAY_TAG_EXTERN(Quest_1);
+		UE_DECLARE_GAMEPLAY_TAG_EXTERN(Quest_2);
+	} // namespace Quests
 
 } // namespace GTag

@@ -56,9 +56,13 @@ void ULookAndInteract::Input_Interact(const FInputActionValue& Value)
 	if (GameplayTagInterface && GameplayTagInterface->HasMatchingGameplayTag(GTag::Interactable::Any))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Interacted with: %s"), *HitResult.GetActor()->GetName());
-		CharacterOwner->GetMainDashboard()->HighlightPrompt(FString::Printf(TEXT("%s"), *HitActor->GetName()), 2.0f, FLinearColor::Green);
+		// CharacterOwner->GetMainDashboard()->HighlightPrompt(FString::Printf(TEXT("%s"), *HitActor->GetName()), 2.0f, FLinearColor::Green);
 
-		if (GameplayTagInterface->HasMatchingGameplayTag(GTag::Interactable::Pickup))
+		FGameplayTagContainer InteractionTags;
+		InteractionTags.AddTag(GTag::Interactable::Interact);
+		InteractionTags.AddTag(GTag::Interactable::Push);
+		InteractionTags.AddTag(GTag::Interactable::Pickup);
+		if (GameplayTagInterface->HasAnyMatchingGameplayTags(InteractionTags))
 		{
 			if (HitActor->Implements<UInteractable>())
 				IInteractable::Execute_Interact(HitActor, CharacterOwner);

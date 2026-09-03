@@ -33,7 +33,7 @@ protected:
 	float PushImpulseStrength = 100000.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "LookAndInteract")
-	bool bDebug = true;
+	bool bDebug = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "LookAndInteract")
 	bool bSweepForInteraction = true;
