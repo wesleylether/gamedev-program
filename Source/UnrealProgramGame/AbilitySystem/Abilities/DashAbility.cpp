@@ -20,6 +20,7 @@ UDashAbility::UDashAbility()
 	ActivationBlockedTags.AddTag(GTag::State::Flying);
 	ActivationBlockedTags.AddTag(GTag::State::Jumping);
 	ActivationBlockedTags.AddTag(GTag::State::Dashing);
+	ActivationBlockedTags.AddTag(GTag::State::Crouching);
 	ActivationBlockedTags.AddTag(GTag::State::Exhausted);
 	ActivationBlockedTags.AddTag(GTag::State::InMud);
 
@@ -39,7 +40,7 @@ void UDashAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, cons
 	if (AUnrealProgramGameCharacter* Character = Cast<AUnrealProgramGameCharacter>(ActorInfo->AvatarActor.Get()))
 	{
 		FVector2D MoveInput = Character->GetLastDashInput2D();
-		FVector	  DashDirection;
+		FVector DashDirection;
 
 		if (MoveInput.IsNearlyZero())
 		{
