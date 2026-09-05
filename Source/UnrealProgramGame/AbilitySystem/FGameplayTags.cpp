@@ -23,6 +23,7 @@ namespace GTag
 	{
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(Dashing, "GTags.State.Dashing", "Tag for dashing state")
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(Running, "GTags.State.Running", "Tag for running state")
+		UE_DEFINE_GAMEPLAY_TAG_COMMENT(Crouching, "GTags.State.Crouching", "Tag for crouching state")
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(Flying, "GTags.State.Flying", "Tag for flying state")
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(Jumping, "GTags.State.Jumping", "Tag for jumping state")
 		UE_DEFINE_GAMEPLAY_TAG_COMMENT(Exhausted, "GTags.State.Exhausted", "Tag for exhausted state")

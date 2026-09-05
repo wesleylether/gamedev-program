@@ -299,6 +299,7 @@ void AUnrealProgramGameCharacter::CrouchInput(const FInputActionValue& Value)
 	FGameplayTagContainer ActiveTags;
 	ActiveTags.AddTag(GTag::State::Running);
 	ActiveTags.AddTag(GTag::State::Jumping);
+	ActiveTags.AddTag(GTag::State::Dashing);
 	ActiveTags.AddTag(GTag::State::Flying);
 	if (AbilitySystemComponent->HasAnyMatchingGameplayTags(ActiveTags))
 	{
@@ -308,10 +309,12 @@ void AUnrealProgramGameCharacter::CrouchInput(const FInputActionValue& Value)
 	if (Value.Get<bool>())
 	{
 		Crouch();
+		AbilitySystemComponent->AddLooseGameplayTag(GTag::State::Crouching);
 	}
 	else
 	{
 		UnCrouch();
+		AbilitySystemComponent->RemoveLooseGameplayTag(GTag::State::Crouching);
 	}
 }
 

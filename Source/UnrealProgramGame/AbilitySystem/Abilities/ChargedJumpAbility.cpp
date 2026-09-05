@@ -19,6 +19,7 @@ UChargedJumpAbility::UChargedJumpAbility()
 
 	ActivationBlockedTags.AddTag(GTag::State::Flying);
 	ActivationBlockedTags.AddTag(GTag::State::Dashing);
+	ActivationBlockedTags.AddTag(GTag::State::Crouching);
 	ActivationBlockedTags.AddTag(GTag::State::Exhausted);
 	ActivationBlockedTags.AddTag(GTag::State::InMud);
 
